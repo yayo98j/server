@@ -70,6 +70,10 @@ class UploadCleanup extends TimedJob {
 			return;
 		}
 
+		$files = $uploadFolder->getDirectoryListing();
+
+		$davPath = 'uploads/' . $uid . '/' . $uploadFolder->getName();
+
 		// Remove if all files have an mtime of more than a day
 		$time = $this->time->getTime() - 60 * 60 * 24;
 
@@ -93,6 +97,7 @@ class UploadCleanup extends TimedJob {
 		}, $initial);
 
 		if ($expire) {
+			$this->customPropertiesService->delete($uid, $davPath);
 			$uploadFolder->delete();
 			$this->jobList->remove(self::class, $argument);
 		}
