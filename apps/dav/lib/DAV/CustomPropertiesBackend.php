@@ -219,7 +219,7 @@ class CustomPropertiesBackend implements BackendInterface {
 	 */
 	public function delete($path) {
 		$this->customPropertiesService->delete($this->user->getUID(), $path);
-		unset($this->cache[$path]);
+		unset($this->userCache[$path]);
 	}
 
 	/**
