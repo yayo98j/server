@@ -420,6 +420,9 @@ class PublicKeyTokenProvider implements IProvider {
 		// Update the password for all tokens
 		$tokens = $this->mapper->getTokenByUser($uid);
 		foreach ($tokens as $t) {
+			if (!$t->getPasswordInvalid() && $t->getPassword() === $password) {
+				continue;
+			}
 			$publicKey = $t->getPublicKey();
 			$t->setPassword($this->encryptPassword($password, $publicKey));
 			$t->setPasswordInvalid(false);
