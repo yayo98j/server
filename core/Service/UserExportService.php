@@ -55,7 +55,7 @@ class UserExportService {
 		$view = new View();
 
 		// TODO config option?
-		$exportFolder = "$uid/files/export/";
+		$exportFolder = "$uid/export/";
 		$finalTarget = $exportFolder.date('Y-m-d H-i-s');
 
 		if (count($view->getDirectoryContent($exportFolder)) > 0) {
