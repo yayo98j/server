@@ -23,7 +23,7 @@ declare(strict_types=1);
  *
  */
 
-namespace OCA\Files\Command;
+namespace OC\Core\Command\User;
 
 use OC\Core\Service\UserExportService;
 use OCP\IUser;
@@ -43,7 +43,7 @@ class Export extends Command {
 	private $exportService;
 
 	public function __construct(IUserManager $userManager,
-								UserExportService $exportService,
+								UserExportService $exportService
 								) {
 		parent::__construct();
 		$this->userManager = $userManager;

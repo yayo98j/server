@@ -25,7 +25,6 @@ declare(strict_types=1);
  */
 namespace OC\Core\BackgroundJobs;
 
-use OC\BackgroundJob\QueuedJob;
 use OC\Core\Db\UserExportMapper;
 use OC\Core\Db\UserExport;
 use OC\Core\Service\UserExportService;
@@ -68,7 +67,7 @@ class UserExportJob extends QueuedJob {
 		$this->mapper = $mapper;
 	}
 
-	public function run($arguments): void {
+	public function run($argument): void {
 		$id = $argument['id'];
 
 		$export = $this->mapper->getById($id);
@@ -97,7 +96,7 @@ class UserExportJob extends QueuedJob {
 		// Send notification to user
 		$notification = $this->notificationManager->createNotification();
 		$notification->setUser($export->getUser())
-			->setApp(Application::APP_ID)
+			//~ ->setApp(Application::APP_ID)
 			->setDateTime($this->time->getDateTime())
 			->setSubject('exportFailed', [
 				'user' => $export->getUser(),
@@ -110,7 +109,7 @@ class UserExportJob extends QueuedJob {
 		// Send notification to user
 		$notification = $this->notificationManager->createNotification();
 		$notification->setUser($export->getUser())
-			->setApp(Application::APP_ID)
+			//~ ->setApp(Application::APP_ID)
 			->setDateTime($this->time->getDateTime())
 			->setSubject('exportDone', [
 				'user' => $export->getUser(),
