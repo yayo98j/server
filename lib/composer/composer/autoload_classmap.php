@@ -904,6 +904,7 @@ return array(
     'OC\\Core\\Command\\User\\Delete' => $baseDir . '/core/Command/User/Delete.php',
     'OC\\Core\\Command\\User\\Disable' => $baseDir . '/core/Command/User/Disable.php',
     'OC\\Core\\Command\\User\\Enable' => $baseDir . '/core/Command/User/Enable.php',
+    'OC\\Core\\Command\\User\\FakeLogin' => $baseDir . '/core/Command/User/FakeLogin.php',
     'OC\\Core\\Command\\User\\Info' => $baseDir . '/core/Command/User/Info.php',
     'OC\\Core\\Command\\User\\LastSeen' => $baseDir . '/core/Command/User/LastSeen.php',
     'OC\\Core\\Command\\User\\ListCommand' => $baseDir . '/core/Command/User/ListCommand.php',
