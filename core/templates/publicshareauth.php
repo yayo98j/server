@@ -21,8 +21,14 @@
 				autocomplete="new-password" autocapitalize="off" autocorrect="off"
 				autofocus />
 			<input type="hidden" name="sharingToken" value="<?php p($_['share']->getToken()) ?>" id="sharingToken">
+			<input type="hidden" name="sharingType" value="<?php p($_['share']->getShareType()) ?>" id="sharingType">
 			<input type="submit" id="password-submit" 
 				class="svg icon-confirm input-button-inline" value="" disabled="disabled" />
 		</p>
 	</fieldset>
 </form>
+<?php if ($_['share']->getShareType()==$_['share']::TYPE_EMAIL && !$_['share']->getSendPasswordByTalk()): ?>
+<form method="post">
+	<input type="button" id="password-request" value="<?php p($l->t('Request password')); ?>" class="primary button-vue" />
+</form>
+<?php endif; ?>
