@@ -209,6 +209,37 @@ class ShareController extends AuthPublicShareController {
 		return $response;
 	}
 
+	/**
+	 * The template to show after user identification
+	 */
+	protected function showIdentificationResult(bool $success = false): TemplateResponse {
+		$templateParameters = ['share' => $this->share, 'identityOk' => $success];
+
+		$this->eventDispatcher->dispatchTyped(new BeforeTemplateRenderedEvent($this->share, BeforeTemplateRenderedEvent::SCOPE_PUBLIC_SHARE_AUTH));
+
+		$response = new TemplateResponse('core', 'publicshareauth', $templateParameters, 'guest');
+		if ($this->share->getSendPasswordByTalk()) {
+			$csp = new ContentSecurityPolicy();
+			$csp->addAllowedConnectDomain('*');
+			$csp->addAllowedMediaDomain('blob:');
+			$response->setContentSecurityPolicy($csp);
+		}
+
+		return $response;
+	}
+
+	protected function validateIdentity(string $identityToken): bool {
+		return $this->shareManager->validateIdentity($this->share, $identityToken);
+	}
+
+	protected function generatePassword() {
+		// TODO Use password policy when defined
+		$password = \OC::$server->getSecureRandom()->generate(10);
+		$this->share->setPassword($password);
+		$this->shareManager->updateShare($this->share);
+		return;
+	}
+
 	protected function verifyPassword(string $password): bool {
 		return $this->shareManager->checkPassword($this->share, $password);
 	}

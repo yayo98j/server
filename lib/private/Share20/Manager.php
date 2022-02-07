@@ -1534,6 +1534,30 @@ class Manager implements IManager {
 	}
 
 	/**
+	 * Validate the identity token of a public share
+	 *
+	 * @param IShare $share
+	 * @param string $recipient
+	 * @return bool
+	 */
+	public function validateIdentity(IShare $share, $identityToken) {
+
+		if ($share->getShareType() !== IShare::TYPE_EMAIL) {
+			return false;
+		}
+
+		if ($identityToken === null || $share->getSharedWith() === null) {
+			return false;
+		}
+
+		if ($identityToken !== $share->getSharedWith()) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Verify the password of a public share
 	 *
 	 * @param IShare $share
