@@ -172,7 +172,7 @@
 							? t('files_sharing', 'Password protection (enforced)')
 							: t('files_sharing', 'Password protect') }}
 					</ActionCheckbox>
-					<ActionInput v-if="isPasswordProtected"
+					<ActionInput v-if="isPasswordProtected && (!isEmailShareType || isPasswordProtectedByTalk)"
 						ref="password"
 						v-tooltip.auto="{
 							content: errors.password,
