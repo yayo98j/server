@@ -727,18 +727,24 @@ class ShareByMailProvider implements IShareProvider {
 	 *
 	 * @param IShare $share
 	 * @param string|null $plainTextPassword
+	 * @param bool $sendEmail whether the password should be sent to the recipient or not. 
+	 * 	The password shall be sent only when it has been requested successfully, either
+	 * 	via a Talk session, or the temporary password self-provisioning process.
 	 * @return IShare The share object
 	 */
-	public function update(IShare $share, $plainTextPassword = null) {
+	public function update(IShare $share, $plainTextPassword = null, bool $sendEmail = false) {
 		$originalShare = $this->getShareById($share->getId());
 
 		// a real password was given
 		$validPassword = $plainTextPassword !== null && $plainTextPassword !== '';
 
-		if ($validPassword && ($originalShare->getPassword() !== $share->getPassword() ||
-								($originalShare->getSendPasswordByTalk() && !$share->getSendPasswordByTalk()))) {
-			$this->sendPassword($share, $plainTextPassword);
+		if ($sendEmail) {
+			if ($validPassword && ($originalShare->getPassword() !== $share->getPassword() ||
+			($originalShare->getSendPasswordByTalk() && !$share->getSendPasswordByTalk()))) {
+				$this->sendPassword($share, $plainTextPassword);
+			}
 		}
+
 		/*
 		 * We allow updating the permissions and password of mail shares
 		 */
@@ -749,6 +755,7 @@ class ShareByMailProvider implements IShareProvider {
 			->set('uid_owner', $qb->createNamedParameter($share->getShareOwner()))
 			->set('uid_initiator', $qb->createNamedParameter($share->getSharedBy()))
 			->set('password', $qb->createNamedParameter($share->getPassword()))
+			->set('password_expiration_time', $qb->createNamedParameter($sendEmail ? (new \DateTime())->add(new \DateInterval('P1D')) : null, IQueryBuilder::PARAM_DATE))
 			->set('label', $qb->createNamedParameter($share->getLabel()))
 			->set('password_by_talk', $qb->createNamedParameter($share->getSendPasswordByTalk(), IQueryBuilder::PARAM_BOOL))
 			->set('expiration', $qb->createNamedParameter($share->getExpirationDate(), IQueryBuilder::PARAM_DATE))

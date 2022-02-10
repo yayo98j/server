@@ -236,7 +236,7 @@ class ShareController extends AuthPublicShareController {
 		// TODO Use password policy when defined
 		$password = \OC::$server->getSecureRandom()->generate(10);
 		$this->share->setPassword($password);
-		$this->shareManager->updateShare($this->share);
+		$this->shareManager->updateShare($this->share, true);
 		return;
 	}
 
