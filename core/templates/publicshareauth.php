@@ -13,9 +13,7 @@
 		<?php if (isset($_['wrongpw'])): ?>
 			<div class="warning"><?php p($l->t('The password is wrong. Try again.')); ?></div>
 		<?php endif; ?>
-		<?php if (!isset($_['identityOk'])): ?>
-			<div class="warning-info" id="email-prompt" style="display:none;"><?php p($l->t('Please type in your email address to request a temporary password')); ?></div>
-		<?php endif; ?>
+		<div class="warning-info" id="email-prompt" style="display:none;"><?php p($l->t('Please type in your email address to request a temporary password')); ?></div>
 		<p id="password-input">
 			<label for="password" class="infield"><?php p($l->t('Password')); ?></label>
 			<input type="hidden" name="requesttoken" value="<?php p($_['requesttoken']) ?>" />
@@ -34,10 +32,10 @@
 		</p>
 		<?php if (isset($_['identityOk'])): ?>
 			<?php if ($_['identityOk']): ?>
-				<div class="warning-info" id="email-prompt"><?php p($l->t('Password sent!')); ?></div>
+				<div class="warning-info" id="identification-success"><?php p($l->t('Password sent!')); ?></div>
 			<?php endif; ?>
 			<?php if (!$_['identityOk']): ?>
-				<div class="warning-info" id="email-prompt"><?php p($l->t('You are not authorized to request a password for this share')); ?></div>
+				<div class="warning-info" id="identification-failure"><?php p($l->t('You are not authorized to request a password for this share')); ?></div>
 			<?php endif; ?>
 		<?php endif; ?>
 	</fieldset>
