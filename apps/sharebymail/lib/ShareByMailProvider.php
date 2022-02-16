@@ -755,7 +755,7 @@ class ShareByMailProvider implements IShareProvider {
 			->set('uid_owner', $qb->createNamedParameter($share->getShareOwner()))
 			->set('uid_initiator', $qb->createNamedParameter($share->getSharedBy()))
 			->set('password', $qb->createNamedParameter($share->getPassword()))
-			->set('password_expiration_time', $qb->createNamedParameter($sendEmail ? (new \DateTime())->add(new \DateInterval('P1D')) : null, IQueryBuilder::PARAM_DATE))
+			->set('password_expiration_time', $qb->createNamedParameter((new \DateTime())->add(new \DateInterval('P1D')), IQueryBuilder::PARAM_DATE))
 			->set('label', $qb->createNamedParameter($share->getLabel()))
 			->set('password_by_talk', $qb->createNamedParameter($share->getSendPasswordByTalk(), IQueryBuilder::PARAM_BOOL))
 			->set('expiration', $qb->createNamedParameter($share->getExpirationDate(), IQueryBuilder::PARAM_DATE))
