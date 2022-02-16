@@ -42,7 +42,7 @@
 </form>
 <?php if ($_['share']->getShareType()===$_['share']::TYPE_EMAIL && !$_['share']->getSendPasswordByTalk()): ?>
 	<input type="button"
-		id="request-password-button"
+		id="request-password-button-not-talk"
 		value="<?php p($l->t('Request password')); ?>"
 		class="primary" />
 <?php endif; ?>

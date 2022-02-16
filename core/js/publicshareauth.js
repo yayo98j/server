@@ -6,7 +6,7 @@ function showEmailAddressPrompt() {
 	emailPrompt.style.display="block";
 
 	// Hides password prompt
-	var passwordRequestButton = document.getElementById('request-password-button');
+	var passwordRequestButton = document.getElementById('request-password-button-not-talk');
 	var passwordInput = document.getElementById('password-input');
 	passwordRequestButton.style.display="none";
 	passwordInput.style.display="none";
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	passwordInput.addEventListener('keyup', eventListener);
 	passwordInput.addEventListener('change', eventListener);
 
-	var passwordRequestButton = document.getElementById('request-password-button');
+	var passwordRequestButton = document.getElementById('request-password-button-not-talk');
 	passwordRequestButton.addEventListener('click', showEmailAddressPrompt);
 
 });
