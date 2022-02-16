@@ -233,8 +233,8 @@ class ShareController extends AuthPublicShareController {
 	}
 
 	protected function generatePassword() {
-		// TODO Use password policy when defined
-		$password = \OC::$server->getSecureRandom()->generate(10);
+		// QUESTION: SHALL I RESPECT PASSWORD POLICY HERE (WHEN USED)?
+		$password = \OC::$server->getSecureRandom()->generate(20);
 		$this->share->setPassword($password);
 		$this->shareManager->updateShare($this->share, true);
 		return;
