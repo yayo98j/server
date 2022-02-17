@@ -49,7 +49,7 @@ class ResetExpiredPasswordsJob extends TimedJob {
 	}
 
 	// Sets a random password to shares whose password has expired
-	protected function run($arguments) {
+	protected function run($argument) {
 		$qb = $this->connection->getQueryBuilder();
 
 		// QUESTION: DOES THE DATETIME COMPARAISON WORK WELL WHEN TIMEZONES ENTER THE GAME?

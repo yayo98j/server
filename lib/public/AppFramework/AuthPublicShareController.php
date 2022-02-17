@@ -98,7 +98,7 @@ abstract class AuthPublicShareController extends PublicShareController {
 	 *
 	 * @since 24.0.0
 	 */
-	abstract protected function validateIdentity(string $identitiyToken): bool;
+	abstract protected function validateIdentity(string $identityToken): bool;
 
 	/**
 	 * Generates a password

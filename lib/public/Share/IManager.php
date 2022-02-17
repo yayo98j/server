@@ -60,11 +60,14 @@ interface IManager {
 	 * The state can't be changed this way: use acceptShare
 	 *
 	 * @param IShare $share
+	 * @param bool $sendPassword For non-anonymous shares, tells whether the share's password
+         * 	should be sent to the recipient or not (overriden when the share's password is
+         * 	requested via Talk, in which case it is always sent)
 	 * @return IShare The share object
 	 * @throws \InvalidArgumentException
 	 * @since 9.0.0
 	 */
-	public function updateShare(IShare $share);
+	public function updateShare(IShare $share, bool $sendPassword);
 
 	/**
 	 * Accept a share.
@@ -201,6 +204,15 @@ interface IManager {
 	 * @since 9.0.0
 	 */
 	public function getShareByToken($token);
+
+	/**
+	 * Validate the identity token of a public share
+	 *
+	 * @param IShare $share
+	 * @param string $recipient
+	 * @return bool
+	 */
+	public function validateIdentity(IShare $share, $identityToken);
 
 	/**
 	 * Verify the password of a public share
