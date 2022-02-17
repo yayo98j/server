@@ -67,7 +67,7 @@ interface IManager {
 	 * @throws \InvalidArgumentException
 	 * @since 9.0.0
 	 */
-	public function updateShare(IShare $share, bool $sendPassword);
+	public function updateShare(IShare $share, bool $sendPassword = false);
 
 	/**
 	 * Accept a share.
