@@ -233,8 +233,12 @@ class ShareController extends AuthPublicShareController {
 	}
 
 	protected function generatePassword() {
-		// QUESTION: SHALL I RESPECT PASSWORD POLICY HERE (WHEN USED)?
-		$password = \OC::$server->getSecureRandom()->generate(20);
+		// Generates a password respecting any password policy defined
+		$eventDispatcher = \OC::$server->query(IEventDispatcher::class);
+		$event = new \OCP\Security\Events\GenerateSecurePasswordEvent();
+		$eventDispatcher->dispatchTyped($event);
+		$password = $event->getPassword() ?? $password = \OC::$server->getSecureRandom()->generate(20);
+
 		$this->share->setPassword($password);
 		$this->shareManager->updateShare($this->share, true);
 		return;

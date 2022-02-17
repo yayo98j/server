@@ -53,16 +53,24 @@ class ResetExpiredPasswordsJob extends TimedJob {
 		$qb = $this->connection->getQueryBuilder();
 
 		// QUESTION: DOES THE DATETIME COMPARAISON WORK WELL WHEN TIMEZONES ENTER THE GAME?
+		// I THINK SO, BECAUSE EVERYTHING HAPPENS ON THE SERVER, HENCE ON THE SAME TZ
 		$qb->select('id')
 			->from('share')
 			->where($qb->expr()->lte('password_expiration_time', $qb->createNamedParameter((new \DateTime())->format('Y-m-d H:i:s'))));
 
 		$result = $qb->execute();
 		while ($row = $result->fetch()) {
-			// QUESTION: SHALL I RESPECT PASSWORD POLICY HERE (WHEN USED)?
+
+			// Generates a random password respecting any password policy defined
+			$eventDispatcher = \OC::$server->query(IEventDispatcher::class);
+			$event = new \OCP\Security\Events\GenerateSecurePasswordEvent();
+			$eventDispatcher->dispatchTyped($event);
+			$password = $event->getPassword() ?? $this->hasher->hash($this->secureRandom->generate(20));
+
+			// Updates share password and expiration time
 			$qb->update('share')
 				->where($qb->expr()->eq('id', $qb->createNamedParameter($row['id'])))
-				->set('password', $qb->createNamedParameter($this->hasher->hash($this->secureRandom->generate(20))))
+				->set('password', $qb->createNamedParameter($password))
 				->set('password_expiration_time', $qb->createNamedParameter((new \DateTime())->add(new \DateInterval('P1D'))->format('Y-m-d H:i:s')))
 				->execute();
 		}
