@@ -234,7 +234,6 @@ class ShareController extends AuthPublicShareController {
 
 	protected function generatePassword() {
 		// Generates a password respecting any password policy defined
-		$eventDispatcher = \OC::$server->query(IEventDispatcher::class);
 		$event = new \OCP\Security\Events\GenerateSecurePasswordEvent();
 		$eventDispatcher->dispatchTyped($event);
 		$password = $event->getPassword() ?? $password = \OC::$server->getSecureRandom()->generate(20);

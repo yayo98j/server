@@ -22,6 +22,7 @@ namespace OCA\Files_Sharing\BackgroundJob;
 
 use \OCP\AppFramework\Utility\ITimeFactory;
 use \OCP\BackgroundJob\TimedJob;
+use \OCP\EventDispatcher\IEventDispatcher;
 use \OCP\IDBConnection;
 use \OCP\Security\IHasher;
 use \OCP\Security\ISecureRandom;
@@ -31,16 +32,22 @@ class ResetExpiredPasswordsJob extends TimedJob {
 	/** @var IDBConnection */
 	private $connection;
 
+	/** @var IEventDispatcher */
+	private $eventDispatcher;
+
 	/** @var IHasher */
 	private $hasher;
 
 	/** @var ISecureRandom */
 	private $secureRandom;
 
-	public function __construct(IDBConnection $connection, IHasher $hasher, ISecureRandom $secureRandom, ITimeFactory $time) {
+	public function __construct(IDBConnection $connection, IEventDispatcher $eventDispatcher,
+		IHasher $hasher, ISecureRandom $secureRandom, ITimeFactory $time) {
+
 		parent::__construct($time);
 
 		$this->connection = $connection;
+		$this->eventDispatcher = $eventDispatcher;
 		$this->hasher = $hasher;
 		$this->secureRandom = $secureRandom;
 
@@ -62,7 +69,6 @@ class ResetExpiredPasswordsJob extends TimedJob {
 		while ($row = $result->fetch()) {
 
 			// Generates a random password respecting any password policy defined
-			$eventDispatcher = \OC::$server->query(IEventDispatcher::class);
 			$event = new \OCP\Security\Events\GenerateSecurePasswordEvent();
 			$eventDispatcher->dispatchTyped($event);
 			$password = $event->getPassword() ?? $this->hasher->hash($this->secureRandom->generate(20));
