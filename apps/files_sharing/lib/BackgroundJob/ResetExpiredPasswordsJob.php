@@ -70,7 +70,7 @@ class ResetExpiredPasswordsJob extends TimedJob {
 
 			// Generates a random password respecting any password policy defined
 			$event = new \OCP\Security\Events\GenerateSecurePasswordEvent();
-			$eventDispatcher->dispatchTyped($event);
+			$this->eventDispatcher->dispatchTyped($event);
 			$password = $event->getPassword() ?? $this->hasher->hash($this->secureRandom->generate(20));
 
 			// Updates share password and expiration time
