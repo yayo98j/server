@@ -727,7 +727,7 @@ class ShareByMailProvider implements IShareProvider {
 	 *
 	 * @param IShare $share
 	 * @param string|null $plainTextPassword
-	 * @param bool $sendEmail whether the password should be sent to the recipient or not. 
+	 * @param bool $sendEmail whether the password should be sent to the recipient or not.
 	 * 	The password shall be sent only when it has been requested successfully, either
 	 * 	via a Talk session, or the temporary password self-provisioning process.
 	 * @return IShare The share object

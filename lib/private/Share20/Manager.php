@@ -959,9 +959,9 @@ class Manager implements IManager {
 	 * Update a share
 	 *
 	 * @param IShare $share
-	 * @param bool $sendPassword For non-anonymous shares, tells whether the share's password 
+	 * @param bool $sendPassword For non-anonymous shares, tells whether the share's password
 	 * 	should be sent to the recipient or not (overriden when the share's password is
-	 * 	requested via Talk, in which case it is always sent) 
+	 * 	requested via Talk, in which case it is always sent)
 	 * @return IShare The share object
 	 * @throws \InvalidArgumentException
 	 */

@@ -28,7 +28,7 @@
 		</p>
 		 <p id="email-input" style="display:none;">
 			<input type="email" id="email" name="identityToken" placeholder="<?php p($l->t('Email address')); ?>" />
-			<input type="submit" id="password-request" name="passwordRequest" class="svg icon-confirm input-button-inline" value="" /> 
+			<input type="submit" id="password-request" name="passwordRequest" class="svg icon-confirm input-button-inline" value="" />
 		</p>
 		<?php if (isset($_['identityOk'])): ?>
 			<?php if ($_['identityOk']): ?>
