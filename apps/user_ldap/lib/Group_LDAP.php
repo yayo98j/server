@@ -357,7 +357,9 @@ class Group_LDAP extends BackendUtility implements GroupInterface, IGroupLDAP, I
 		};
 
 		$groups = $this->walkNestedGroupsReturnDNs($dn, $fetcher, $groups);
-		return $this->filterValidGroups($groups);
+		$filterValidGroup = $this->filterValidGroups($groups);
+		\OC::$server->getLogger()->critical('_getGroupDNsFromMemberOf::' . $dn . ' filterValidGroup=' . var_export($filterValidGroup, true));
+		return $filterValidGroup;
 	}
 
 	/**
@@ -366,6 +368,7 @@ class Group_LDAP extends BackendUtility implements GroupInterface, IGroupLDAP, I
 	 * @param Closure(string) $fetcher
 	 */
 	private function processListFromWalkingNestedGroups(array &$list, array &$seen, string $dn, Closure $fetcher): void {
+		\OC::$server->getLogger()->critical('processListFromWalkingNestedGroups::' . $dn . ' list=' . var_export($list, true) . ' seen=' . $seen);
 		while ($record = array_shift($list)) {
 			$recordDN = $record['dn'][0] ?? $record;
 			if ($recordDN === $dn || array_key_exists($recordDN, $seen)) {
@@ -384,6 +387,7 @@ class Group_LDAP extends BackendUtility implements GroupInterface, IGroupLDAP, I
 				$seen[$recordDN] = $record;
 			}
 		}
+		\OC::$server->getLogger()->critical('after processListFromWalkingNestedGroups::' . $dn . ' list=' . var_export($list, true) . ' seen=' . $seen);
 	}
 
 	/**
@@ -393,6 +397,8 @@ class Group_LDAP extends BackendUtility implements GroupInterface, IGroupLDAP, I
 	 */
 	private function walkNestedGroupsReturnDNs(string $dn, Closure $fetcher, array $list, array &$seen = []): array {
 		$nesting = (int)$this->access->connection->ldapNestedGroups;
+
+		\OC::$server->getLogger()->critical('walkNestedGroupsReturnDNs::' . $dn . ', nesting=' . $nesting);
 
 		if ($nesting !== 1) {
 			return $list;
@@ -730,11 +736,13 @@ class Group_LDAP extends BackendUtility implements GroupInterface, IGroupLDAP, I
 		$cacheKey = 'getUserGroups' . $uid;
 		$userGroups = $this->access->connection->getFromCache($cacheKey);
 		if (!is_null($userGroups)) {
+			\OC::$server->getLogger()->critical('getUserGroups::' . $uid . ' cached =' . var_export($userGroups, true));
 			return $userGroups;
 		}
 		$userDN = $this->access->username2dn($uid);
 		if (!$userDN) {
 			$this->access->connection->writeToCache($cacheKey, []);
+			\OC::$server->getLogger()->critical('getUserGroups::' . $uid . ' no dn');
 			return [];
 		}
 
@@ -808,6 +816,7 @@ class Group_LDAP extends BackendUtility implements GroupInterface, IGroupLDAP, I
 				$groups[] = $gidGroupName;
 			}
 			$this->access->connection->writeToCache($cacheKey, $groups);
+			\OC::$server->getLogger()->critical('getUserGroups::' . $uid . '  hasMemberOfFilterSupport = ' . var_export($groups, true));
 			return $groups;
 		}
 
@@ -862,6 +871,7 @@ class Group_LDAP extends BackendUtility implements GroupInterface, IGroupLDAP, I
 		$groups = array_unique($groups, SORT_LOCALE_STRING);
 		$this->access->connection->writeToCache($cacheKey, $groups);
 
+		\OC::$server->getLogger()->critical('getUserGroups::' . $uid . '  computed = ' . var_export($groups, true));
 		return $groups;
 	}
 
@@ -877,6 +887,7 @@ class Group_LDAP extends BackendUtility implements GroupInterface, IGroupLDAP, I
 			return [];
 		}
 		if ($this->cachedGroupsByMember[$dn]) {
+			\OC::$server->getLogger()->critical('getGroupsByMember is cached and returns ' . var_export($this->cachedGroupsByMember[$dn], true) . ' for ' . $dn);
 			return $this->cachedGroupsByMember[$dn];
 		}
 		$allGroups = [];
@@ -909,6 +920,7 @@ class Group_LDAP extends BackendUtility implements GroupInterface, IGroupLDAP, I
 		$visibleGroups = $this->filterValidGroups($allGroups);
 		$effectiveGroups = array_intersect_key($allGroups, $visibleGroups);
 		$this->cachedGroupsByMember[$dn] = $effectiveGroups;
+		\OC::$server->getLogger()->critical('getGroupsByMember is not cached and returns ' . var_export($this->cachedGroupsByMember[$dn], true) . ' for ' . $dn);
 		return $effectiveGroups;
 	}
 
