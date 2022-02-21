@@ -967,6 +967,12 @@ class Access extends LDAPUtility {
 	 * @return array
 	 */
 	public function fetchListOfGroups($filter, $attr, $limit = null, $offset = null) {
+		$cacheKey = 'fetchListOfGroups_' . $filter . '_' . (is_array($attr) ? implode('-', $attr) : $attr) . '_' . $limit . '_' . $offset;
+		$listOfGroups = $this->connection->getFromCache($cacheKey);
+		if (!is_null($listOfGroups)) {
+			return $listOfGroups;
+		}
+
 		$groupRecords = $this->searchGroups($filter, $attr, $limit, $offset);
 
 		$listOfDNs = array_reduce($groupRecords, function ($listOfDNs, $entry) {
@@ -985,7 +991,9 @@ class Access extends LDAPUtility {
 				$this->cacheGroupExists($gid);
 			}
 		});
-		return $this->fetchList($groupRecords, $this->manyAttributes($attr));
+		$listOfGroups = $this->fetchList($groupRecords, $this->manyAttributes($attr));
+		$this->connection->writeToCache($cacheKey, $listOfGroups);
+		return $listOfGroups;
 	}
 
 	/**

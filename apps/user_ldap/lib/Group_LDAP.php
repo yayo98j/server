@@ -844,14 +844,14 @@ class Group_LDAP extends BackendUtility implements GroupInterface, IGroupLDAP, I
 		}
 
 		if ($uid !== false) {
-			if (isset($this->cachedGroupsByMember[$uid])) {
-				$groups = array_merge($groups, $this->cachedGroupsByMember[$uid]);
-			} else {
-				$groupsByMember = array_values($this->getGroupsByMember($uid));
-				$groupsByMember = $this->access->nextcloudGroupNames($groupsByMember);
-				$this->cachedGroupsByMember[$uid] = $groupsByMember;
-				$groups = array_merge($groups, $groupsByMember);
-			}
+			// Clear cache between invocation of getGroupsByMember
+			// getGroupsByMember is a recursive method and the results stored in
+			// the cache depends on the already seen groups. This breaks when we
+			// have circular groups
+			$this->cachedGroupsByMember = new CappedMemoryCache();
+			$groupsByMember = array_values($this->getGroupsByMember($uid));
+			$groupsByMember = $this->access->nextcloudGroupNames($groupsByMember);
+			$groups = array_merge($groups, $groupsByMember);
 		}
 
 		if ($primaryGroup !== false) {
