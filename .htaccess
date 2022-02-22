@@ -45,11 +45,16 @@
   # Add cache control for static resources
   <FilesMatch "\.(css|js|svg|gif|png|jpg|ico|wasm|tflite)$">
     Header set Cache-Control "max-age=15778463"
+    # Header set Service-Worker-Allowed "/"
   </FilesMatch>
 
   # Let browsers cache WOFF files for a week
   <FilesMatch "\.woff2?$">
     Header set Cache-Control "max-age=604800"
+  </FilesMatch>
+
+  <FilesMatch "files-webworker\.js$">
+    Header set Service-Worker-Allowed "/"
   </FilesMatch>
 </IfModule>
 

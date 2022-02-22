@@ -434,6 +434,7 @@ class EmptyContentSecurityPolicy {
 		$policy = "default-src 'none';";
 		$policy .= "base-uri 'none';";
 		$policy .= "manifest-src 'self';";
+		$policy .= "worker-src 'self';";
 
 		if (!empty($this->allowedScriptDomains) || $this->inlineScriptAllowed || $this->evalScriptAllowed) {
 			$policy .= 'script-src ';

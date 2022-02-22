@@ -77,6 +77,7 @@ class FilesPlugin extends ServerPlugin {
 	public const UPLOAD_TIME_PROPERTYNAME = '{http://nextcloud.org/ns}upload_time';
 	public const CREATION_TIME_PROPERTYNAME = '{http://nextcloud.org/ns}creation_time';
 	public const SHARE_NOTE = '{http://nextcloud.org/ns}note';
+	public const PREVIEW_ACCESS_TOKEN = '{http://nextcloud.org/ns}preview-access-token';
 
 	/**
 	 * Reference to main server object
@@ -176,6 +177,7 @@ class FilesPlugin extends ServerPlugin {
 		$server->protectedProperties[] = self::MOUNT_TYPE_PROPERTYNAME;
 		$server->protectedProperties[] = self::IS_ENCRYPTED_PROPERTYNAME;
 		$server->protectedProperties[] = self::SHARE_NOTE;
+		$server->protectedProperties[] = self::PREVIEW_ACCESS_TOKEN;
 
 		// normally these cannot be changed (RFC4918), but we want them modifiable through PROPPATCH
 		$allowedProperties = ['{DAV:}getetag'];
@@ -381,6 +383,18 @@ class FilesPlugin extends ServerPlugin {
 			});
 			$propFind->handle(self::MOUNT_TYPE_PROPERTYNAME, function () use ($node) {
 				return $node->getFileInfo()->getMountPoint()->getMountType();
+			});
+
+			$propFind->handle(self::PREVIEW_ACCESS_TOKEN, function () use ($node) {
+				if (!$this->previewManager->isAvailable($node->getFileInfo())) {
+					return 'invalid';
+				}
+				if ($node->getFileInfo()->getPermissions() & Constants::PERMISSION_READ === 0) {
+					return 'invalid';
+				}
+				$fileId = $node->getFileInfo()->getId();
+				$etag = $node->getFileInfo()->getEtag();
+				return hash('sha512', $fileId . $etag . $this->config->getSystemValueString('secret'));
 			});
 
 			$propFind->handle(self::SHARE_NOTE, function () use ($node, $httpRequest) {

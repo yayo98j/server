@@ -105,6 +105,7 @@ import escapeHTML from 'escape-html'
 	Client.PROPERTY_ISENCRYPTED	= '{' + Client.NS_DAV + '}is-encrypted'
 	Client.PROPERTY_SHARE_PERMISSIONS	= '{' + Client.NS_OCS + '}share-permissions'
 	Client.PROPERTY_QUOTA_AVAILABLE_BYTES	= '{' + Client.NS_DAV + '}quota-available-bytes'
+	Client.PROPERTY_PREVIEW_ACCESS_TOKEN	= '{' + Client.NS_NEXTCLOUD + '}preview-access-token'
 
 	Client.PROTOCOL_HTTP	= 'http'
 	Client.PROTOCOL_HTTPS	= 'https'
@@ -160,6 +161,10 @@ import escapeHTML from 'escape-html'
 		 * Share permissions
 		 */
 		[Client.NS_OCS, 'share-permissions'],
+		/**
+		 * Preview access token
+		 */
+		[Client.NS_NEXTCLOUD, 'preview-access-token'],
 	]
 
 	/**
@@ -409,6 +414,11 @@ import escapeHTML from 'escape-html'
 						break
 					}
 				}
+			}
+
+			const previewAccessToken = props[Client.PROPERTY_PREVIEW_ACCESS_TOKEN]
+			if (!_.isUndefined(previewAccessToken)) {
+				data.previewAccessToken = previewAccessToken
 			}
 
 			const sharePermissionsProp = props[Client.PROPERTY_SHARE_PERMISSIONS]
