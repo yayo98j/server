@@ -117,6 +117,11 @@ $application->registerRoutes(
 				'url' => '/directEditing/{token}',
 				'verb' => 'GET'
 			],
+			[
+				'name' => 'API#serviceWorker',
+				'url' => '/api/v1/files-preview-worker.js',
+				'verb' => 'GET'
+			],
 		],
 		'ocs' => [
 			[

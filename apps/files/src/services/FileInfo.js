@@ -57,7 +57,8 @@ export default async function(url) {
 			</d:prop>
 			</d:propfind>`,
 	})
-// TODO: create new parser or use cdav-lib when available
+
+	// TODO: create new parser or use cdav-lib when available
 	const file = OCA.Files.App.fileList.filesClient._client.parseMultiStatus(response.data)
 	// TODO: create new parser or use cdav-lib when available
 	const fileInfo = OCA.Files.App.fileList.filesClient._parseFileInfo(file[0])

@@ -155,7 +155,7 @@
 			}
 
 			if ('serviceWorker' in navigator) {
-				navigator.serviceWorker.register('/dist/files-webworker.js', {scope: '/'})
+				navigator.serviceWorker.register('/apps/files/api/v1/files-preview-worker.js', {scope: '/'})
 					.then((reg) => {
 						// registration worked
 						console.log('Registration succeeded. Scope is ' + reg.scope);
