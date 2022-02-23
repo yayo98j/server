@@ -73,6 +73,8 @@ class Share implements IShare {
 	private $expireDate;
 	/** @var string */
 	private $password;
+	/** @var string */
+	private $passwordExpirationTime;
 	/** @var bool */
 	private $sendPasswordByTalk = false;
 	/** @var string */
@@ -459,6 +461,21 @@ class Share implements IShare {
 	 */
 	public function getPassword() {
 		return $this->password;
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function setPasswordExpirationTime($passwordExpirationTime) {
+		$this->passwordExpirationTime = $passwordExpirationTime;
+		return $this;
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function getPasswordExpirationTime() {
+		return $this->passwordExpirationTime;
 	}
 
 	/**

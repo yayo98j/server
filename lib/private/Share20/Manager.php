@@ -1580,6 +1580,16 @@ class Manager implements IManager {
 			return false;
 		}
 
+		// Makes sure password hasn't expired
+		$expirationTime = $share->getPasswordExpirationTime();
+		if ($expirationTime !== null) {
+			$expirationDateTime = new \DateTime($expirationTime);
+			$now = new \DateTime();
+			if ($expirationDateTime < $now) {
+				return false;
+			}	
+		}
+
 		$newHash = '';
 		if (!$this->hasher->verify($password, $share->getPassword(), $newHash)) {
 			return false;

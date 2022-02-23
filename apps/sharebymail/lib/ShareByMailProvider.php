@@ -1033,6 +1033,7 @@ class ShareByMailProvider implements IShareProvider {
 		$share->setShareTime($shareTime);
 		$share->setSharedWith($data['share_with']);
 		$share->setPassword($data['password']);
+		$share->setPasswordExpirationTime($data['password_expiration_time']);
 		$share->setLabel($data['label']);
 		$share->setSendPasswordByTalk((bool)$data['password_by_talk']);
 		$share->setHideDownload((bool)$data['hide_download']);

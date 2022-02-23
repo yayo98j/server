@@ -448,6 +448,19 @@ interface IShare {
 	 */
 	public function getPassword();
 
+	/**
+	 * Set the password's expiration time of this share.
+	 *
+	 * @return \OCP\Share\IShare The modified object
+	 */
+	public function setPasswordExpirationTime($passwordExpirationTime);
+
+	/**
+	 * Get the password's expiration time of this share.
+	 *
+	 * @return string
+	 */
+	public function getPasswordExpirationTime();
 
 	/**
 	 * Set if the recipient can start a conversation with the owner to get the
