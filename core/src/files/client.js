@@ -419,6 +419,15 @@ import escapeHTML from 'escape-html'
 			const previewAccessToken = props[Client.PROPERTY_PREVIEW_ACCESS_TOKEN]
 			if (!_.isUndefined(previewAccessToken)) {
 				data.previewAccessToken = previewAccessToken
+				// Dispatch the preview token to the service worker.
+				if ('serviceWorker' in navigator && 'controller' in navigator.serviceWorker) {
+					navigator.serviceWorker.controller.postMessage({
+						type: 'NEW_THUMBNAIL_ACCESS_TOKEN',
+						fileId: data.id,
+						token: previewAccessToken,
+	
+					});
+				}
 			}
 
 			const sharePermissionsProp = props[Client.PROPERTY_SHARE_PERMISSIONS]

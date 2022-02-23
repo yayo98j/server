@@ -1,49 +1,69 @@
-// eslint-disable-next-line no-console
-console.log('HELLO FROM WEB WORKER!')
+self.addEventListener('install', () => console.debug('Preview worker installed'))
+self.addEventListener('activate', () => console.debug('Preview worker activated'))
+self.addEventListener('message', handleMessageEvent)
+self.addEventListener('fetch', handleFetchEvent)
 
-self.addEventListener('install', (event) => {
+/** @type {Object<string, string>} */
+const previewAccessTokens = {}
 
-})
+/**
+ * @param {MessageEvent} event The message event..
+ * @return {void}
+ */
+function handleMessageEvent(event) {
+	if (event.data && event.data.type === 'NEW_THUMBNAIL_ACCESS_TOKEN') {
+		// eslint-disable-next-line no-console
+		console.debug('Add new token for: ', event.data.fileId)
+		previewAccessTokens[event.data.fileId] = event.data.token
+	}
+}
 
-self.addEventListener('activate', (event) => {
-
-})
-
-self.addEventListener('fetch', async (event) => {
-	if (!event.request.url.startsWith(`${location.origin}/core/preview`)) {
-		return fetch(event.request)
+/**
+ * @param {FetchEvent} event The fetch event.
+ * @return {Promise<void>}
+ */
+async function handleFetchEvent(event) {
+	if (event.request.url.startsWith(`${location.origin}/core/preview`)) {
+		return event.respondWith(getPreview(event.request))
 	}
 
-	return event.respondWith(getPreview(event))
-})
+	return event.respondWith(fetch(event.request))
+}
 
+/**
+ * @param {Request} request The preview request.
+ * @return {Promise<Response>}
+ */
+async function getPreview(request) {
+	const cache = await caches.open('files-preview')
+	const url = new URL(request.url)
+	const fileId = url.searchParams.get('fileId') || ''
+	const token = previewAccessTokens[fileId]
 
-async function getPreview(event) {
-	const cachedPreview = await caches.match(event.request)
-
+	// Return a cached preview if available.
+	const cachedPreview = await cache.match(request.url)
 	if (cachedPreview !== undefined) {
 		// eslint-disable-next-line no-console
-		console.debug('Return cache for: ', event.request.url)
+		console.debug('Return cache for: ', request.url)
 		return cachedPreview
 	}
 
-	// eslint-disable-next-line no-console
-	console.debug('Fetching resource for: ', event.request.url)
+	// Add the token to the headers if available.
+	if (token !== undefined) {
+		// Create new Request with mutable Headers.
+		// mode: 'cors' is needed, else it fails silently.
+		request = new Request(request, { mode: 'cors', headers: new Headers(request.headers) })
+		request.headers.append('X-OC-Thumbnail-Access-Token', token)
 
-	const headers = new Headers()
-	for (const key of event.request.headers.keys()) {
-		headers.append(key, event.request.headers.get(key))
+		// eslint-disable-next-line no-console
+		console.debug('Fetching preview with token for: ', request.url)
+	} else {
+		// eslint-disable-next-line no-console
+		console.debug('Fetching preview for: ', request.url)
 	}
 
-	headers.append('THUMBNAIL_ACCESS_TOKEN', 'random_string')
-
-	const fetchedPreview = await fetch({
-		url: event.request,
-		headers
-	})
-
-	const cache = await caches.open('v1')
-	cache.put(event.request, fetchedPreview.clone())
-
+	// Fetch and cache the preview with the token.
+	const fetchedPreview = await fetch(request)
+	cache.put(request.url, fetchedPreview.clone())
 	return fetchedPreview
 }
