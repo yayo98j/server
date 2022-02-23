@@ -745,29 +745,43 @@ class ShareByMailProvider implements IShareProvider {
 			}
 		}
 
+		// Gets password expiration interval. Defaults to 15 minutes.
+		$expirationInterval = $this->config->getSystemValue('share_temporary_password_expiration_interval');
+		if ($expirationInterval === '') {
+			$expirationInterval = 'P0DT15M';
+		}
+
 		/*
 		 * We allow updating the permissions and password of mail shares
 		 */
-		$qb = $this->dbConnection->getQueryBuilder();
-		$qb->update('share')
-			->where($qb->expr()->eq('id', $qb->createNamedParameter($share->getId())))
-			->set('permissions', $qb->createNamedParameter($share->getPermissions()))
-			->set('uid_owner', $qb->createNamedParameter($share->getShareOwner()))
-			->set('uid_initiator', $qb->createNamedParameter($share->getSharedBy()))
-			->set('password', $qb->createNamedParameter($share->getPassword()))
-			->set('password_expiration_time', $qb->createNamedParameter((new \DateTime())->add(new \DateInterval('P1D')), IQueryBuilder::PARAM_DATE))
-			->set('label', $qb->createNamedParameter($share->getLabel()))
-			->set('password_by_talk', $qb->createNamedParameter($share->getSendPasswordByTalk(), IQueryBuilder::PARAM_BOOL))
-			->set('expiration', $qb->createNamedParameter($share->getExpirationDate(), IQueryBuilder::PARAM_DATE))
-			->set('note', $qb->createNamedParameter($share->getNote()))
-			->set('hide_download', $qb->createNamedParameter((int)$share->getHideDownload(), IQueryBuilder::PARAM_INT))
-			->executeStatement();
+		$now = new \DateTime();
+		try {
+			$expirationTime = $now->add(new \DateInterval($expirationInterval));
+		} catch (\Exception $e) {
+			// Catches invalid format for system value 'share_temporary_password_expiration_interval'
+			$expirationTime = $now->add(new \DateInterval('P0DT15M'));
+		} finally {
+			$qb = $this->dbConnection->getQueryBuilder();
+			$qb->update('share')
+				->where($qb->expr()->eq('id', $qb->createNamedParameter($share->getId())))
+				->set('permissions', $qb->createNamedParameter($share->getPermissions()))
+				->set('uid_owner', $qb->createNamedParameter($share->getShareOwner()))
+				->set('uid_initiator', $qb->createNamedParameter($share->getSharedBy()))
+				->set('password', $qb->createNamedParameter($share->getPassword()))
+				->set('password_expiration_time', $qb->createNamedParameter($expirationTime->format('Y-m-d H:i:s'), IQueryBuilder::PARAM_DATE))
+				->set('label', $qb->createNamedParameter($share->getLabel()))
+				->set('password_by_talk', $qb->createNamedParameter($share->getSendPasswordByTalk(), IQueryBuilder::PARAM_BOOL))
+				->set('expiration', $qb->createNamedParameter($share->getExpirationDate(), IQueryBuilder::PARAM_DATE))
+				->set('note', $qb->createNamedParameter($share->getNote()))
+				->set('hide_download', $qb->createNamedParameter((int)$share->getHideDownload(), IQueryBuilder::PARAM_INT))
+				->executeStatement();
 
-		if ($originalShare->getNote() !== $share->getNote() && $share->getNote() !== '') {
-			$this->sendNote($share);
+			if ($originalShare->getNote() !== $share->getNote() && $share->getNote() !== '') {
+				$this->sendNote($share);
+			}
+
+			return $share;
 		}
-
-		return $share;
 	}
 
 	/**

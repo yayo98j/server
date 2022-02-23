@@ -22,12 +22,17 @@ namespace OCA\Files_Sharing\BackgroundJob;
 
 use \OCP\AppFramework\Utility\ITimeFactory;
 use \OCP\BackgroundJob\TimedJob;
+use \OCP\DB\QueryBuilder\IQueryBuilder;
 use \OCP\EventDispatcher\IEventDispatcher;
+use \OCP\IConfig;
 use \OCP\IDBConnection;
 use \OCP\Security\IHasher;
 use \OCP\Security\ISecureRandom;
 
 class ResetExpiredPasswordsJob extends TimedJob {
+
+	/** @var IConfig */
+	private $config;
 
 	/** @var IDBConnection */
 	private $connection;
@@ -41,11 +46,12 @@ class ResetExpiredPasswordsJob extends TimedJob {
 	/** @var ISecureRandom */
 	private $secureRandom;
 
-	public function __construct(IDBConnection $connection, IEventDispatcher $eventDispatcher,
+	public function __construct(IConfig $config, IDBConnection $connection, IEventDispatcher $eventDispatcher,
 		IHasher $hasher, ISecureRandom $secureRandom, ITimeFactory $time) {
 
 		parent::__construct($time);
 
+		$this->config = $config;
 		$this->connection = $connection;
 		$this->eventDispatcher = $eventDispatcher;
 		$this->hasher = $hasher;
@@ -63,7 +69,7 @@ class ResetExpiredPasswordsJob extends TimedJob {
 		// I THINK SO, BECAUSE EVERYTHING HAPPENS ON THE SERVER, HENCE ON THE SAME TZ
 		$qb->select('id')
 			->from('share')
-			->where($qb->expr()->lte('password_expiration_time', $qb->createNamedParameter((new \DateTime())->format('Y-m-d H:i:s'))));
+			->where($qb->expr()->lte('password_expiration_time', $qb->createNamedParameter((new \DateTime())->format('Y-m-d H:i:s'), IQueryBuilder::PARAM_DATE)));
 
 		$result = $qb->execute();
 		while ($row = $result->fetch()) {
@@ -73,12 +79,28 @@ class ResetExpiredPasswordsJob extends TimedJob {
 			$this->eventDispatcher->dispatchTyped($event);
 			$password = $event->getPassword() ?? $this->hasher->hash($this->secureRandom->generate(20));
 
-			// Updates share password and expiration time
-			$qb->update('share')
-				->where($qb->expr()->eq('id', $qb->createNamedParameter($row['id'])))
-				->set('password', $qb->createNamedParameter($password))
-				->set('password_expiration_time', $qb->createNamedParameter((new \DateTime())->add(new \DateInterval('P1D'))->format('Y-m-d H:i:s')))
-				->execute();
+			// Gets password expiration interval. Default to 15 minutes
+			$expirationInterval = $this->config->getSystemValue('share_temporary_password_expiration_interval');
+			if ($expirationInterval === '') {
+				$expirationInterval = 'P0DT15M';
+			}
+
+			// Computes new password expiration time.
+			$now = new \DateTime();
+			try {
+				$expirationTime = $now->add(new \DateInterval($expirationInterval));
+			} catch (\Exception $e) {
+				// Catches invalid format for system value 'share_temporary_password_expiration_interval'
+				$expirationTime = $now->add(new \DateInterval('P0DT15M'));
+			} finally {
+
+				// Updates share password and expiration time
+				$qb->update('share')
+					->where($qb->expr()->eq('id', $qb->createNamedParameter($row['id'])))
+					->set('password', $qb->createNamedParameter($password))
+					->set('password_expiration_time', $qb->createNamedParameter($expirationTime->format('Y-m-d H:i:s'), IQueryBuilder::PARAM_DATE))
+					->execute();
+			}
 		}
 
 	}
