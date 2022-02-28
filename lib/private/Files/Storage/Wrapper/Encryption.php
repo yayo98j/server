@@ -804,7 +804,7 @@ class Encryption extends Wrapper {
 					fclose($target);
 				}
 				$this->logger->logException(new \Exception("Fail to copy '$sourceInternalPath' to '$targetInternalPath'", 0, $e));
-				if (defined('STDERR')) {
+				if ($GLOBALS['ignore-encryption-error']) {
 					fwrite(STDERR, "	- Skipping '$sourceInternalPath'" . $e->getMessage() . PHP_EOL);
 					$result = true;
 				} else {
