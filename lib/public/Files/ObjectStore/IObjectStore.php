@@ -81,4 +81,10 @@ interface IObjectStore {
 	 * @since 21.0.0
 	 */
 	public function copyObject($from, $to);
+
+	/**
+	 * @param $urn the unified resource name used to identify the object
+	 * @since 24.0.0
+	 */
+	public function headObject(string $urn): mixed;
 }
