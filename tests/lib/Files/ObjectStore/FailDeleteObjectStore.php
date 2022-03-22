@@ -56,7 +56,7 @@ class FailDeleteObjectStore implements IObjectStore {
 		$this->objectStore->copyObject($from, $to);
 	}
 
-	public function headObject($urn) {
+	public function headObject(string $urn): mixed {
 		return $this->objectStore->headObject($urn);
 	}
 }
