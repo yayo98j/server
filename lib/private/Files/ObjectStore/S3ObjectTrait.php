@@ -126,4 +126,12 @@ trait S3ObjectTrait {
 	public function copyObject($from, $to) {
 		$this->getConnection()->copy($this->getBucket(), $from, $this->getBucket(), $to);
 	}
+
+	public function headObject(string $urn) {
+		return $this->getConnection()
+			->headObject([
+				'Bucket' => $this->bucket,
+				'Key' => $urn,
+			])->toArray();
+	}
 }

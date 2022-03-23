@@ -123,7 +123,7 @@ class AmazonS3 extends \OC\Files\Storage\Common {
 	 * @param $key
 	 * @return Result|boolean
 	 */
-	private function headObject($key) {
+	public function headObject(string $key) {
 		if (!isset($this->objectCache[$key])) {
 			try {
 				$this->objectCache[$key] = $this->getConnection()->headObject([
