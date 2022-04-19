@@ -1154,9 +1154,6 @@
     <InvalidArgument occurrences="1">
       <code>'OCA\Files_Trashbin::moveToTrash'</code>
     </InvalidArgument>
-    <InvalidOperand occurrences="1">
-      <code>$this-&gt;mountPoint</code>
-    </InvalidOperand>
     <TooManyArguments occurrences="1">
       <code>dispatch</code>
     </TooManyArguments>

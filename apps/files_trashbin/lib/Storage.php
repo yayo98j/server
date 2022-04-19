@@ -34,51 +34,32 @@ use OCA\Files_Trashbin\Events\MoveToTrashEvent;
 use OCA\Files_Trashbin\Trash\ITrashManager;
 use OCP\Encryption\Exceptions\GenericEncryptionException;
 use OCP\Files\IRootFolder;
-use OCP\Files\Mount\IMountPoint;
 use OCP\Files\Node;
 use OCP\Files\Storage\IStorage;
-use OCP\ILogger;
 use OCP\IUserManager;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class Storage extends Wrapper {
-	/** @var IMountPoint */
-	private $mountPoint;
-
-	/** @var  IUserManager */
-	private $userManager;
-
-	/** @var ILogger */
-	private $logger;
-
-	/** @var EventDispatcherInterface */
-	private $eventDispatcher;
-
-	/** @var IRootFolder */
-	private $rootFolder;
-
-	/** @var ITrashManager */
-	private $trashManager;
-
-	private $trashEnabled = true;
+	private string $mountPoint;
+	private IUserManager $userManager;
+	private LoggerInterface $logger;
+	private EventDispatcherInterface $eventDispatcher;
+	private IRootFolder $rootFolder;
+	private ITrashManager $trashManager;
+	private bool $trashEnabled = true;
 
 	/**
 	 * Storage constructor.
-	 *
 	 * @param array $parameters
-	 * @param ITrashManager $trashManager
-	 * @param IUserManager|null $userManager
-	 * @param ILogger|null $logger
-	 * @param EventDispatcherInterface|null $eventDispatcher
-	 * @param IRootFolder|null $rootFolder
 	 */
 	public function __construct(
 		$parameters,
-		ITrashManager $trashManager = null,
-		IUserManager $userManager = null,
-		ILogger $logger = null,
-		EventDispatcherInterface $eventDispatcher = null,
-		IRootFolder $rootFolder = null
+		?ITrashManager $trashManager = null,
+		?IUserManager $userManager = null,
+		?LoggerInterface $logger = null,
+		?EventDispatcherInterface $eventDispatcher = null,
+		?IRootFolder $rootFolder = null
 	) {
 		$this->mountPoint = $parameters['mountPoint'];
 		$this->trashManager = $trashManager;
@@ -216,7 +197,7 @@ class Storage extends Wrapper {
 				['storage' => $storage, 'mountPoint' => $mountPoint],
 				\OC::$server->query(ITrashManager::class),
 				\OC::$server->getUserManager(),
-				\OC::$server->getLogger(),
+				\OC::$server->get(LoggerInterface::class),
 				\OC::$server->getEventDispatcher(),
 				\OC::$server->getLazyRootFolder()
 			);
