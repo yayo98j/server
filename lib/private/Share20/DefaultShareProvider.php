@@ -670,28 +670,34 @@ class DefaultShareProvider implements IShareProvider {
 			);
 		}
 
-		// todo? maybe get these from the oc_mounts table
-		$childMountNodes = array_filter($node->getDirectoryListing(), function (Node $node) {
-			return $node->getInternalPath() === '';
-		});
-		$childMountRootIds = array_map(function (Node $node) {
-			return $node->getId();
-		}, $childMountNodes);
-
 		$qb->innerJoin('s', 'filecache', 'f', $qb->expr()->eq('s.file_source', 'f.fileid'));
+		$qb->leftJoin('s', 'mounts', 'm', $qb->expr()->eq('s.file_source', 'm.root_id'));
+		$absolutePath = $node->getMountPoint()->getMountPoint() . $node->getInternalPath();
+
 		$qb->andWhere(
 			$qb->expr()->orX(
 				$qb->expr()->eq('f.parent', $qb->createNamedParameter($node->getId())),
-				$qb->expr()->in('f.fileid', $qb->createNamedParameter($childMountRootIds, IQueryBuilder::PARAM_INT_ARRAY))
+				$qb->expr()->like('m.mount_point', $qb->createNamedParameter(
+					// note that this will select to many items, (inside sub folders) these are filtered out later
+					$qb->getConnection()->escapeLikeParameter($absolutePath) . '/%'
+				))
 			)
 		);
 
-		$qb->orderBy('id');
+		$qb->orderBy('s.id');
 
 		$cursor = $qb->execute();
 		$shares = [];
 		while ($data = $cursor->fetch()) {
-			$shares[$data['fileid']][] = $this->createShare($data);
+			if ($data['mount_point'] === null) {
+				$shares[$data['fileid']][] = $this->createShare($data);
+			} else {
+				// check if the shared mountpoint is a direct child
+				$relativePath = trim(substr($data['mount_point'], strlen($absolutePath)), '/');
+				if (strpos($relativePath, '/') === false) {
+					$shares[$data['fileid']][] = $this->createShare($data);
+				}
+			}
 		}
 		$cursor->closeCursor();
 
