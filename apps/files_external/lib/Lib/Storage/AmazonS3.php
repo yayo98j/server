@@ -52,6 +52,7 @@ use OCP\Constants;
 use OCP\Files\FileInfo;
 use OCP\Files\IMimeTypeDetector;
 use OCP\ICacheFactory;
+use OCP\ILogger;
 use OCP\IMemcache;
 
 class AmazonS3 extends \OC\Files\Storage\Common {
@@ -666,30 +667,40 @@ class AmazonS3 extends \OC\Files\Storage\Common {
 			$path .= '/';
 		}
 
-		$results = $this->getConnection()->getPaginator('ListObjectsV2', [
-			'Bucket' => $this->bucket,
-			'Delimiter' => '/',
-			'Prefix' => $path,
-		]);
+		try {
+			$results = $this->getConnection()->getPaginator('ListObjectsV2', [
+				'Bucket' => $this->bucket,
+				'Delimiter' => '/',
+				'Prefix' => $path,
+			]);
 
-		foreach ($results as $result) {
-			// sub folders
-			if (is_array($result['CommonPrefixes'])) {
-				foreach ($result['CommonPrefixes'] as $prefix) {
-					$dir = $this->getDirectoryMetaData($prefix['Prefix']);
-					if ($dir) {
-						yield $dir;
+			foreach ($results as $result) {
+				// sub folders
+				if (is_array($result['CommonPrefixes'])) {
+					foreach ($result['CommonPrefixes'] as $prefix) {
+						$dir = $this->getDirectoryMetaData($prefix['Prefix']);
+						if ($dir) {
+							yield $dir;
+						}
+					}
+				}
+				if (is_array($result['Contents'])) {
+					foreach ($result['Contents'] as $object) {
+						$this->objectCache[$object['Key']] = $object;
+						if ($object['Key'] !== $path) {
+							yield $this->objectToMetaData($object);
+						}
 					}
 				}
 			}
-			if (is_array($result['Contents'])) {
-				foreach ($result['Contents'] as $object) {
-					$this->objectCache[$object['Key']] = $object;
-					if ($object['Key'] !== $path) {
-						yield $this->objectToMetaData($object);
-					}
+		} catch (S3Exception $e) {
+			/** @var ILogger $logger */
+			$logger = \OC::$server->get(ILogger::class);
+			$response = $e->getResponse();
+			if ($response) {
+				$logger->error("Error while listing s3 content with response: " . $response->getBody()->getContents());
 				}
-			}
+			throw $e;
 		}
 	}
 
