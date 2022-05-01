@@ -100,6 +100,10 @@ class DefaultTheme implements ITheme {
 		return '';
 	}
 
+	public function getMeta(): array {
+		return [];
+	}
+
 	public function getCSSVariables(): array {
 		$colorMainText = '#222222';
 		$colorMainTextRgb = join(',', $this->util->hexToRGB($colorMainText));
