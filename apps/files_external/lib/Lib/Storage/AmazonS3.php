@@ -699,7 +699,9 @@ class AmazonS3 extends \OC\Files\Storage\Common {
 			$response = $e->getResponse();
 			if ($response) {
 				$logger->error("Error while listing s3 content with response: " . $response->getBody()->getContents());
-				}
+			} else {
+				$logger->error("Error while listing s3 content without response");
+			}
 			throw $e;
 		}
 	}
