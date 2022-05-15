@@ -29,9 +29,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  *
  */
-
-use Psr\Log\LoggerInterface;
-
 // load needed apps
 $RUNTIME_APPTYPES = ['filesystem', 'authentication', 'logging'];
 
@@ -41,7 +38,7 @@ OC_Util::obEnd();
 \OC::$server->getSession()->close();
 
 // Backends
-$authBackend = new OCA\DAV\Connector\LegacyPublicAuth(
+$authBackend = new OCA\DAV\Connector\Sabre\PublicAuth(
 	\OC::$server->getRequest(),
 	\OC::$server->getShareManager(),
 	\OC::$server->getSession(),
@@ -51,7 +48,7 @@ $authPlugin = new \Sabre\DAV\Auth\Plugin($authBackend);
 
 $serverFactory = new OCA\DAV\Connector\Sabre\ServerFactory(
 	\OC::$server->getConfig(),
-	\OC::$server->get(LoggerInterface::class),
+	\OC::$server->get(Psr\Log\LoggerInterface::class),
 	\OC::$server->getDatabaseConnection(),
 	\OC::$server->getUserSession(),
 	\OC::$server->getMountManager(),
@@ -66,6 +63,10 @@ $requestUri = \OC::$server->getRequest()->getRequestUri();
 
 $linkCheckPlugin = new \OCA\DAV\Files\Sharing\PublicLinkCheckPlugin();
 $filesDropPlugin = new \OCA\DAV\Files\Sharing\FilesDropPlugin();
+
+// Define root url with /public.php/dav/files/TOKEN
+preg_match('/(^files\/\w+)/i', substr($requestUri, strlen($baseuri)), $match);
+$baseuri = $baseuri . $match[0];
 
 $server = $serverFactory->createServer($baseuri, $requestUri, $authPlugin, function (\Sabre\DAV\Server $server) use ($authBackend, $linkCheckPlugin, $filesDropPlugin) {
 	$isAjax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest');
@@ -98,7 +99,7 @@ $server = $serverFactory->createServer($baseuri, $requestUri, $authPlugin, funct
 	$fileInfo = $ownerView->getFileInfo($path);
 	$linkCheckPlugin->setFileInfo($fileInfo);
 
-	// If not readable (files_drop) enable the filesdrop plugin
+	// If not readble (files_drop) enable the filesdrop plugin
 	if (!$isReadable) {
 		$filesDropPlugin->enable();
 	}

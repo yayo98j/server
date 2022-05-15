@@ -38,12 +38,13 @@ use OCP\Share\IShare;
 use Sabre\DAV\Auth\Backend\AbstractBasic;
 
 /**
- * Class PublicAuth
+ * Class LegacyPublicAuth
  *
  * @package OCA\DAV\Connector
  */
-class PublicAuth extends AbstractBasic {
-	private const BRUTEFORCE_ACTION = 'public_webdav_auth';
+class LegacyPublicAuth extends AbstractBasic {
+	private const BRUTEFORCE_ACTION = 'legacy_public_webdav_auth';
+
 	private ?IShare $share = null;
 	private IManager $shareManager;
 	private ISession $session;
@@ -72,6 +73,7 @@ class PublicAuth extends AbstractBasic {
 	 *
 	 * @param string $username
 	 * @param string $password
+	 *
 	 * @return bool
 	 * @throws \Sabre\DAV\Exception\NotAuthenticated
 	 */
@@ -96,8 +98,8 @@ class PublicAuth extends AbstractBasic {
 				|| $share->getShareType() === IShare::TYPE_CIRCLE) {
 				if ($this->shareManager->checkPassword($share, $password)) {
 					return true;
-				} elseif ($this->session->exists('public_link_authenticated')
-					&& $this->session->get('public_link_authenticated') === (string)$share->getId()) {
+				} elseif ($this->session->exists(PublicAuth::DAV_AUTHENTICATED)
+					&& $this->session->get(PublicAuth::DAV_AUTHENTICATED) === (string)$share->getId()) {
 					return true;
 				} else {
 					if (in_array('XMLHttpRequest', explode(',', $this->request->getHeader('X-Requested-With')))) {
