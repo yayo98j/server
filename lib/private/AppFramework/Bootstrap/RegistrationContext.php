@@ -121,11 +121,13 @@ class RegistrationContext {
 	/** @var ServiceRegistration<ICalendarProvider>[] */
 	private $calendarProviders = [];
 
-	/** @var LoggerInterface */
-	private $logger;
+	/** @var ServiceRegistration<ISetupCheck>[] */
+	private array $setupChecks = [];
+
+	private LoggerInterface $logger;
 
 	/** @var PreviewProviderRegistration[] */
-	private $previewProviders = [];
+	private array $previewProviders = [];
 
 	public function __construct(LoggerInterface $logger) {
 		$this->logger = $logger;
@@ -304,6 +306,13 @@ class RegistrationContext {
 					$migratorClass
 				);
 			}
+
+			public function registerSetupCheck(string $setupCheckClass): void {
+				$this->context->registerSetupCheck(
+					$this->appId,
+					$setupCheckClass
+				);
+			}
 		};
 	}
 
@@ -428,6 +437,13 @@ class RegistrationContext {
 	 */
 	public function registerUserMigrator(string $appId, string $migratorClass): void {
 		$this->userMigrators[] = new ServiceRegistration($appId, $migratorClass);
+	}
+
+	/**
+	 * @psalm-param class-string<ISetupCheck> $setupCheckClass
+	 */
+	public function registerSetupCheck(string $appId, string $setupCheckClass): void {
+		$this->setupChecks[] = new ServiceRegistration($appId, $setupCheckClass);
 	}
 
 	/**
@@ -711,5 +727,12 @@ class RegistrationContext {
 	 */
 	public function getUserMigrators(): array {
 		return $this->userMigrators;
+	}
+
+	/**
+	 * @return ServiceRegistration<ISetupCheck>[]
+	 */
+	public function getSetupChecks(): array {
+		return $this->setupChecks;
 	}
 }

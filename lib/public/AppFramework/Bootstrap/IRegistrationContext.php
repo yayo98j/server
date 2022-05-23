@@ -306,4 +306,14 @@ interface IRegistrationContext {
 	 * @since 24.0.0
 	 */
 	public function registerUserMigrator(string $migratorClass): void;
+
+	/**
+	 * Register an implementation of \OCP\SetupCheck\ISetupCheck that
+	 * will handle the implementation of a setup check
+	 *
+	 * @psalm-param class-string<\OCP\SetupCheck\ISetupCheck> $setupCheckClass
+	 * @return void
+	 * @since 25.0.0
+	 */
+	public function registerSetupCheck(string $setupCheckClass): void;
 }
