@@ -40,6 +40,7 @@ use OCA\User_LDAP\LDAP;
 use OCA\User_LDAP\Notification\Notifier;
 use OCA\User_LDAP\User_Proxy;
 use OCA\User_LDAP\UserPluginManager;
+use OCA\User_LDAP\SetupChecks\LdapInvalidUuids;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
@@ -87,6 +88,7 @@ class Application extends App implements IBootstrap {
 
 	public function register(IRegistrationContext $context): void {
 		$context->registerNotifierService(Notifier::class);
+		$context->registerSetupCheck(LdapInvalidUuids::class);
 	}
 
 	public function boot(IBootContext $context): void {
