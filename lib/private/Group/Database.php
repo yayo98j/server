@@ -58,11 +58,9 @@ class Database extends ABackend implements
 	IRemoveFromGroupBackend,
 	ISetDisplayNameBackend,
 	INamedBackend {
-	/** @var string[] */
+	/** @var array<string, array{gid: string, displayname: string}> */
 	private $groupCache = [];
-
-	/** @var IDBConnection */
-	private $dbConn;
+	private ?IDBConnection $dbConn;
 
 	/**
 	 * \OC\Group\Database constructor.
@@ -266,7 +264,7 @@ class Database extends ABackend implements
 		$this->fixDI();
 
 		$query = $this->dbConn->getQueryBuilder();
-		$query->select('gid')
+		$query->select('gid', 'displayname')
 			->from('groups')
 			->orderBy('gid', 'ASC');
 
@@ -285,6 +283,10 @@ class Database extends ABackend implements
 
 		$groups = [];
 		while ($row = $result->fetch()) {
+			$this->groupCache[$row['gid']] = [
+				'displayname' => $row['displayname'],
+				'gid' => $row['gid'],
+			];
 			$groups[] = $row['gid'];
 		}
 		$result->closeCursor();
@@ -321,6 +323,42 @@ class Database extends ABackend implements
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function groupsExists(array $gids): array {
+		$notFounsGids = [];
+		$existingGroups = [];
+
+		// In case the data is already locally accessible, not need to do SQL query
+		// or do a SQL query but with a smaller in clause
+		foreach ($gids as $gid) {
+			if (isset($this->groupCache[$gid])) {
+				$existingGroups[] = $gid;
+			} else {
+				$notFounsGids[] = $gid;
+			}
+		}
+
+		foreach (array_chunk($notFounsGids, 1000) as $chunk) {
+			$qb = $this->dbConn->getQueryBuilder();
+			$result = $qb->select('gid', 'displayname')
+				->from('groups')
+				->where($qb->expr()->in('gid', $qb->createNamedParameter($chunk, IQueryBuilder::PARAM_STR_ARRAY)))
+				->executeQuery();
+			while ($row = $result->fetch()) {
+				$this->groupCache[$row['gid']] = [
+					'displayname' => $row['displayname'],
+					'gid' => $row['gid'],
+				];
+				$existingGroups[] = $gid;
+			}
+			$result->closeCursor();
+		}
+
+		return $existingGroups;
 	}
 
 	/**
@@ -471,6 +509,43 @@ class Database extends ABackend implements
 		}
 
 		return [];
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getGroupsDetails(array $gids): array {
+		$notFounsGids = [];
+		$details = [];
+
+		// In case the data is already locally accessible, not need to do SQL query
+		// or do a SQL query but with a smaller in clause
+		foreach ($gids as $gid) {
+			if (isset($this->groupCache[$gid])) {
+				$details[$gid] = ['displayName' => $this->groupCache[$gid]['displayname']];
+			} else {
+				$notFounsGids[] = $gid;
+			}
+		}
+
+		foreach (array_chunk($notFounsGids, 1000) as $chunk) {
+			$query = $this->dbConn->getQueryBuilder();
+			$query->select('gid', 'displayname')
+				->from('groups')
+				->where($query->expr()->in('gid', $query->createNamedParameter($chunk, IQueryBuilder::PARAM_STR_ARRAY)));
+
+			$result = $query->executeQuery();
+			while ($row = $result->fetch()) {
+				$details[$row['gid']] = ['displayName' => $row['displayname']];
+				$this->groupCache[$row['gid']] = [
+					'displayname' => $row['displayname'],
+					'gid' => $row['gid'],
+				];
+			}
+			$result->closeCursor();
+		}
+
+		return $details;
 	}
 
 	public function setDisplayName(string $gid, string $displayName): bool {
