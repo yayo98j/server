@@ -56,7 +56,7 @@ try {
 	// side effects in existing apps
 	OC_App::loadApps();
 
-	if (!\OC::$server->getUserSession()->isLoggedIn()) {
+	if (!\OC::$server->getUserSession()->isLoggedIn() && !\OC::$server->getRequest()->getHeader('X-Nextcloud-Federation')) {
 		OC::handleLogin(\OC::$server->getRequest());
 	}
 
