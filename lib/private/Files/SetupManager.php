@@ -542,6 +542,7 @@ class SetupManager {
 			$this->cache->remove($event->getUser()->getUID());
 		});
 		$this->eventDispatcher->addListener(ShareCreatedEvent::class, function (ShareCreatedEvent $event) {
+			\OC::$server->getLogger()->warning('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ share created!');
 			$this->cache->remove($event->getShare()->getSharedWith());
 		});
 		$this->eventDispatcher->addListener(InvalidateMountCacheEvent::class, function (InvalidateMountCacheEvent $event
@@ -561,7 +562,8 @@ class SetupManager {
 		];
 
 		foreach ($genericEvents as $genericEvent) {
-			$this->eventDispatcher->addListener($genericEvent, function ($event) {
+			$this->eventDispatcher->addListener($genericEvent, function ($event) use ($genericEvent) {
+				\OC::$server->getLogger()->warning('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ executing ' . $genericEvent);
 				$this->cache->clear();
 			});
 		}
