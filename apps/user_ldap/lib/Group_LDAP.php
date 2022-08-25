@@ -1114,9 +1114,17 @@ class Group_LDAP extends BackendUtility implements GroupInterface, IGroupLDAP, I
 		$search = $this->access->escapeFilterPart($search, true);
 		$cacheKey = 'getGroups-' . $search . '-' . $limit . '-' . $offset;
 
+		$shouldLog = \OC::$CLI && $search === '' && $limit === -1 && $offset === 0;
+
 		//Check cache before driving unnecessary searches
 		$ldap_groups = $this->access->connection->getFromCache($cacheKey);
 		if (!is_null($ldap_groups)) {
+			if ($shouldLog) {
+				$this->logger->debug('Retrieved {count} groups from cache', [
+					'app' => 'debug_31050',
+					'count' => count($ldap_groups)
+				]);
+			}
 			return $ldap_groups;
 		}
 
@@ -1133,7 +1141,20 @@ class Group_LDAP extends BackendUtility implements GroupInterface, IGroupLDAP, I
 			[$this->access->connection->ldapGroupDisplayName, 'dn'],
 			$limit,
 			$offset);
+		if ($shouldLog) {
+			$this->logger->debug('Retrieved {count} groups from LDAP', [
+				'app' => 'debug_31050',
+				'count' => count($ldap_groups)
+			]);
+		}
+
 		$ldap_groups = $this->access->nextcloudGroupNames($ldap_groups);
+		if ($shouldLog) {
+			$this->logger->debug('Qualified {count} groups', [
+				'app' => 'debug_31050',
+				'count' => count($ldap_groups)
+			]);
+		}
 
 		$this->access->connection->writeToCache($cacheKey, $ldap_groups);
 		return $ldap_groups;
