@@ -120,4 +120,13 @@ class FutureFile implements \Sabre\DAV\IFile {
 	public function getLastModified() {
 		return $this->root->getLastModified();
 	}
+
+	/**
+	 * Get all uploaded chunks for the file
+	 *
+	 * @return UploadFile[]
+	 */
+	public function getChunks(): array {
+		return $this->root->getChildren();
+	}
 }

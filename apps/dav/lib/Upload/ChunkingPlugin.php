@@ -29,6 +29,7 @@ use OCA\DAV\Connector\Sabre\Directory;
 use OCA\DAV\Connector\Sabre\Exception\Forbidden;
 use Sabre\DAV\Exception\BadRequest;
 use Sabre\DAV\Exception\NotFound;
+use Sabre\DAV\IFile;
 use Sabre\DAV\INode;
 use Sabre\DAV\Server;
 use Sabre\DAV\ServerPlugin;
@@ -125,7 +126,13 @@ class ChunkingPlugin extends ServerPlugin {
 		// casted to string because cast to float cause equality for non equal numbers
 		// and integer has the problem of limited size on 32 bit systems
 		if ((string)$expectedSize !== (string)$actualSize) {
-			throw new BadRequest("Chunks on server do not sum up to $expectedSize but to $actualSize bytes");
+			$chunks = array_map(function(IFile $file) {
+				return [
+					'id' => $file->getName(),
+					'size' => $file->getSize(),
+				];
+			}, $this->sourceNode->getChunks());
+			throw new BadRequest("Chunks on server do not sum up to $expectedSize but to $actualSize bytes, chunks: " . json_encode($chunks));
 		}
 	}
 }
