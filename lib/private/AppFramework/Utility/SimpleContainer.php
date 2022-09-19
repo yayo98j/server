@@ -98,10 +98,10 @@ class SimpleContainer extends Container implements IContainer {
 				return $this->buildClass($class);
 			} else {
 				throw new QueryException($baseMsg .
-					' Class can not be instantiated');
+					' Class can not be instantiated ' . debug_backtrace());
 			}
 		} catch(ReflectionException $e) {
-			throw new QueryException($baseMsg . ' ' . $e->getMessage());
+			throw new QueryException($baseMsg . ' ' . $e->getMessage() . ' ' . var_export(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), true));
 		}
 	}
 

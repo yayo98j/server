@@ -608,8 +608,19 @@ class OC {
 
 		// setup the basic server
 		self::$server = new \OC\Server(\OC::$WEBROOT, self::$config);
-		\OC::$server->getEventLogger()->log('autoloader', 'Autoloader', $loaderStart, $loaderEnd);
-		\OC::$server->getEventLogger()->start('boot', 'Initialize');
+
+		$eventLogger = \OC::$server->getEventLogger();
+		$eventLogger->log('autoloader', 'Autoloader', $loaderStart, $loaderEnd);
+		$eventLogger->start('request', 'Full request after autoloading');
+		register_shutdown_function(function () use ($eventLogger) {
+			$eventLogger->end('request');
+		});
+		$eventLogger->start('boot', 'Initialize');
+
+		// Override php.ini and log everything if we're troubleshooting
+		if (self::$config->getValue('loglevel') === ILogger::DEBUG) {
+			error_reporting(E_ALL);
+		}
 
 		// Don't display errors and log them
 		error_reporting(E_ALL | E_STRICT);

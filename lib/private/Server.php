@@ -158,6 +158,12 @@ use OCP\Share\IShareHelper;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use OCA\Files_External\Service\UserStoragesService;
+use OCA\Files_External\Service\UserGlobalStoragesService;
+use OCA\Files_External\Service\GlobalStoragesService;
+use OCA\Files_External\Service\BackendService;
+use OCP\Profiler\IProfiler;
+use OC\Profiler\Profiler;
 
 /**
  * Class Server
@@ -215,6 +221,10 @@ class Server extends ServerContainer implements IServerContainer {
 			return new \OC\Preview\Watcher(
 				$c->getAppDataDir('preview')
 			);
+		});
+
+		$this->registerService(IProfiler::class, function (Server $c) {
+			return new Profiler();
 		});
 
 		$this->registerService(\OCP\Encryption\IManager::class, function (Server $c) {
@@ -550,7 +560,6 @@ class Server extends ServerContainer implements IServerContainer {
 		});
 		$this->registerAlias(\OCP\IAvatarManager::class, AvatarManager::class);
 		$this->registerAlias('AvatarManager', AvatarManager::class);
-
 		$this->registerAlias(\OCP\Support\CrashReport\IRegistry::class, \OC\Support\CrashReport\Registry::class);
 
 		$this->registerService(\OC\Log::class, function (Server $c) {
@@ -639,7 +648,6 @@ class Server extends ServerContainer implements IServerContainer {
 			}
 			$connectionParams = $factory->createConnectionParams();
 			$connection = $factory->getConnection($type, $connectionParams);
-			$connection->getConfiguration()->setSQLLogger($c->getQueryLogger());
 			return $connection;
 		});
 		$this->registerAlias('DatabaseConnection', IDBConnection::class);

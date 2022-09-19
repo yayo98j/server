@@ -24,6 +24,8 @@ namespace OC\DB;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Driver;
+use OCP\Profiler\IProfiler;
+use Doctrine\DBAL\Logging\DebugStack;
 
 class ReconnectWrapper extends \Doctrine\DBAL\Connection {
 	const CHECK_CONNECTION_INTERVAL = 60;
@@ -33,6 +35,16 @@ class ReconnectWrapper extends \Doctrine\DBAL\Connection {
 	public function __construct(array $params, Driver $driver, Configuration $config = null, EventManager $eventManager = null) {
 		parent::__construct($params, $driver, $config, $eventManager);
 		$this->lastConnectionCheck = time();
+
+		/** @var \OCP\Profiler\IProfiler */
+		$profiler = \OC::$server->query(IProfiler::class);
+		if ($profiler->isEnabled()) {
+			$this->dbDataCollector = new DbDataCollector($this);
+			$profiler->add($this->dbDataCollector);
+			$debugStack = new DebugStack();
+			$this->dbDataCollector->setDebugStack($debugStack);
+			$this->_config->setSQLLogger($debugStack);
+		}
 	}
 
 	public function connect() {

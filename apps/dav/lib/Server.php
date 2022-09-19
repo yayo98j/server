@@ -65,6 +65,10 @@ use OCA\DAV\Connector\Sabre\TagsPlugin;
 use SearchDAV\DAV\SearchPlugin;
 use OCA\DAV\AppInfo\PluginManager;
 
+use OCP\Profiler\IProfiler;
+use OCA\DAV\Profiler\ProfilerPlugin;
+use OCP\AppFramework\Http\Response;
+
 class Server {
 
 	/** @var IRequest */
@@ -76,11 +80,20 @@ class Server {
 	/** @var Connector\Sabre\Server  */
 	public $server;
 
+	private $profiler;
+
 	public function __construct(IRequest $request, $baseUri) {
 		$this->request = $request;
 		$this->baseUri = $baseUri;
 		$logger = \OC::$server->getLogger();
 		$dispatcher = \OC::$server->getEventDispatcher();
+
+		$this->profiler = \OC::$server->query(IProfiler::class);
+		if ($this->profiler->isEnabled()) {
+			/** @var IEventLogger $eventLogger */
+			$eventLogger = \OC::$server->query(IEventLogger::class);
+			$eventLogger->start('runtime', 'DAV Runtime');
+		}
 
 		$root = new RootCollection();
 		$this->server = new \OCA\DAV\Connector\Sabre\Server(new CachingTree($root));
@@ -101,6 +114,7 @@ class Server {
 		$this->server->httpRequest->setUrl($this->request->getRequestUri());
 		$this->server->setBaseUri($this->baseUri);
 
+		$this->server->addPlugin(new ProfilerPlugin($this->request));
 		$this->server->addPlugin(new BlockLegacyClientPlugin(\OC::$server->getConfig()));
 		$this->server->addPlugin(new AnonymousOptionsPlugin());
 		$authPlugin = new Plugin();
@@ -299,6 +313,12 @@ class Server {
 
 	public function exec() {
 		$this->server->exec();
+
+		if ($this->profiler->isEnabled()) {
+			$eventLogger->end('runtime');
+			$profile = $this->profiler->collect(\OC::$server->query(IRequest::class), new Response());
+			$this->profiler->saveProfile($profile);
+		}
 	}
 
 	private function requestIsForSubtree(array $subTrees): bool {

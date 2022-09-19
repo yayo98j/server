@@ -36,6 +36,14 @@ use OCP\AppFramework\QueryException;
 use OCP\AppFramework\Http\ICallbackResponse;
 use OCP\AppFramework\Http\IOutput;
 use OCP\IRequest;
+use OCP\IConfig;
+use OCP\Profiler\IProfiler;
+use OCP\Diagnostics\IEventLogger;
+use OC\Profiler\RoutingDataCollector;
+
+function str_starts_with($query, $string) {
+	return substr($string, 0, strlen($query)) === $query;
+}
 
 /**
  * Entry point for every request in your app. You can consider this as your
@@ -73,7 +81,6 @@ class App {
 		return $topNamespace . self::$nameSpaceCache[$appId];
 	}
 
-
 	/**
 	 * Shortcut for calling a controller method and printing the result
 	 * @param string $controllerName the name of the controller under which it is
@@ -83,6 +90,16 @@ class App {
 	 * @param array $urlParams list of URL parameters (optional)
 	 */
 	public static function main(string $controllerName, string $methodName, DIContainer $container, array $urlParams = null) {
+		/** @var IProfiler $profiler */
+		$profiler = $container->query(IProfiler::class);
+		$config = $container->query(IConfig::class);
+		// Disable profiler on the profiler UI
+		$profiler->setEnabled($profiler->isEnabled() && !is_null($urlParams) && isset($urlParams['_route']) && !str_starts_with($urlParams['_route'], 'profiler.'));
+		if ($profiler->isEnabled()) {
+			\OC::$server->query(IEventLogger::class)->activate();
+			$profiler->add(new RoutingDataCollector($container['AppName'], $controllerName, $methodName));
+		}
+
 		if (!is_null($urlParams)) {
 			$container->query(IRequest::class)->setUrlParameters($urlParams);
 		} else if (isset($container['urlParams']) && !is_null($container['urlParams'])) {
@@ -118,6 +135,17 @@ class App {
 		) = $dispatcher->dispatch($controller, $methodName);
 
 		$io = $container[IOutput::class];
+
+		if ($profiler->isEnabled()) {
+			/** @var EventLogger $eventLogger */
+			$eventLogger = $container->query(IEventLogger::class);
+			$eventLogger->end('runtime');
+			$profile = $profiler->collect($container->query(IRequest::class), $response);
+			$profiler->saveProfile($profile);
+			$io->setHeader('X-Debug-Token:' . $profile->getToken());
+			$io->setHeader('Server-Timing: token;desc="' . $profile->getToken() . '"');
+		}
+
 
 		if(!is_null($httpHeaders)) {
 			$io->setHeader($httpHeaders);

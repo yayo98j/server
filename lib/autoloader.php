@@ -35,6 +35,7 @@ namespace OC;
 
 use \OCP\AutoloadNotAllowedException;
 use OCP\ILogger;
+use OCP\ICache;
 
 class Autoloader {
 	/** @var bool */
@@ -179,7 +180,7 @@ class Autoloader {
 	/**
 	 * Sets the optional low-latency cache for class to path mapping.
 	 *
-	 * @param \OC\Memcache\Cache $memoryCache Instance of memory cache.
+	 * @param ICache $memoryCache Instance of memory cache.
 	 */
 	public function setMemoryCache(\OC\Memcache\Cache $memoryCache = null) {
 		$this->memoryCache = $memoryCache;

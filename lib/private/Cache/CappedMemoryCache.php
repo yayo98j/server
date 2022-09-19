@@ -93,4 +93,8 @@ class CappedMemoryCache implements ICache, \ArrayAccess {
 			$this->remove($key);
 		}
 	}
+
+	public static function isAvailable(): bool {
+		return true;
+	}
 }
