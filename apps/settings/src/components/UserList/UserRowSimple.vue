@@ -60,14 +60,14 @@
 			<div v-if="canEdit && !loading.all" class="toggleUserActions">
 				<NcActions>
 					<NcActionButton icon="icon-rename"
-						:title="t('settings', 'Edit User')"
-						:aria-label="t('settings', 'Edit User')"
+						:title="t('settings', 'Edit account')"
+						:aria-label="t('settings', 'Edit account')"
 						@click="toggleEdit" />
 				</NcActions>
 				<div class="userPopoverMenuWrapper">
 					<button v-click-outside="hideMenu"
 						class="icon-more"
-						:aria-label="t('settings', 'Toggle user actions menu')"
+						:aria-label="t('settings', 'Toggle account actions menu')"
 						@click.prevent="toggleMenu" />
 					<div class="popovermenu" :class="{ 'open': openedMenu }" :aria-expanded="openedMenu">
 						<NcPopoverMenu :menu="userActions" />

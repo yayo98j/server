@@ -748,7 +748,7 @@ describe('OC.SetupChecks tests', function() {
 
 			async.done(function( data, s, x ){
 				expect(data).toEqual([{
-					msg: 'Some app directories are owned by a different user than the web server one. This may be the case if apps have been installed manually. Check the permissions of the following app directories:<ul><li>/some/path</li></ul>',
+					msg: 'Some app directories are owned by a different account than the web server one. This may be the case if apps have been installed manually. Check the permissions of the following app directories:<ul><li>/some/path</li></ul>',
 					type: OC.SetupChecks.MESSAGE_TYPE_WARNING
 				}]);
 				done();

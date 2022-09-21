@@ -9,7 +9,7 @@
 } ?>" <?php if ($_['mode'] === 'user') { print_unescaped('aria-current="page"'); } ?>
 				href="<?php print_unescaped($_['urlUserDocs']); ?>">
 				<span class="help-list__text">
-					<?php p($l->t('User documentation')); ?>
+					<?php p($l->t('Usage documentation')); ?>
 				</span>
 			</a>
 		</li>
