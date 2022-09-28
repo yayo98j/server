@@ -805,7 +805,7 @@ class Session implements IUserSession, Emitter {
 		// Update token scope
 		$this->lockdownManager->setToken($dbToken);
 
-		$this->tokenProvider->updateTokenActivity($dbToken);
+		//$this->tokenProvider->updateTokenActivity($dbToken);
 
 		return true;
 	}

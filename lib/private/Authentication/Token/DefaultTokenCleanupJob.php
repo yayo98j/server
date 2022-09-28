@@ -29,7 +29,10 @@ use OC\BackgroundJob\Job;
 class DefaultTokenCleanupJob extends Job {
 	protected function run($argument) {
 		/* @var $provider IProvider */
+		// disable because token activity timestamp is not updated any more
+		/*
 		$provider = OC::$server->query(IProvider::class);
 		$provider->invalidateOldTokens();
+		 */
 	}
 }

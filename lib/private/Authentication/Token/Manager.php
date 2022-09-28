@@ -109,8 +109,11 @@ class Manager implements IProvider {
 	 * @param IToken $token
 	 */
 	public function updateTokenActivity(IToken $token) {
+		// disable to avoid additional load
+		/*
 		$provider = $this->getProvider($token);
 		$provider->updateTokenActivity($token);
+		 */
 	}
 
 	/**
