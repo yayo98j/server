@@ -4961,7 +4961,7 @@ kbd {
 #body-public .header-right #header-secondary-action #header-actions-toggle {
   background-color: transparent;
   border-color: transparent;
-  filter: var(--background-invert-if-dark);
+  filter: var(--primary-invert-if-bright);
 }
 #body-public .header-right #header-secondary-action #header-actions-toggle:hover, #body-public .header-right #header-secondary-action #header-actions-toggle:focus, #body-public .header-right #header-secondary-action #header-actions-toggle:active {
   opacity: 1;
