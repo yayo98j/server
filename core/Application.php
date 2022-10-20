@@ -52,9 +52,8 @@ use OC\Metadata\FileEventListener;
 use OC\TagManager;
 use OCP\AppFramework\App;
 use OCP\EventDispatcher\IEventDispatcher;
-use OCP\Files\Events\Node\NodeDeletedEvent;
+use OCP\Files\Cache\CacheEntryRemovedEvent;
 use OCP\Files\Events\Node\NodeWrittenEvent;
-use OCP\Files\Events\NodeRemovedFromCache;
 use OCP\IDBConnection;
 use OCP\User\Events\BeforeUserDeletedEvent;
 use OCP\User\Events\UserDeletedEvent;
@@ -327,9 +326,7 @@ class Application extends App {
 		$config = $container->get(IConfig::class);
 		if ($config->getSystemValueBool('enable_file_metadata', true)) {
 			/** @psalm-suppress InvalidArgument */
-			$eventDispatcher->addServiceListener(NodeDeletedEvent::class, FileEventListener::class);
-			/** @psalm-suppress InvalidArgument */
-			$eventDispatcher->addServiceListener(NodeRemovedFromCache::class, FileEventListener::class);
+			$eventDispatcher->addServiceListener(CacheEntryRemovedEvent::class, FileEventListener::class);
 			/** @psalm-suppress InvalidArgument */
 			$eventDispatcher->addServiceListener(NodeWrittenEvent::class, FileEventListener::class);
 		}
