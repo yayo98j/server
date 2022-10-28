@@ -62,15 +62,18 @@ class PublicAuth extends AbstractBasic {
 	private ISession $session;
 	private IRequest $request;
 	private Throttler $throttler;
+	private LoggerInterface $logger;
 
 	public function __construct(IRequest $request,
 								IManager $shareManager,
 								ISession $session,
-								Throttler $throttler) {
+								Throttler $throttler,
+								LoggerInterface $logger) {
 		$this->request = $request;
 		$this->shareManager = $shareManager;
 		$this->session = $session;
 		$this->throttler = $throttler;
+		$this->logger = $logger;
 
 		// setup realm
 		$defaults = new \OCP\Defaults();
@@ -107,7 +110,7 @@ class PublicAuth extends AbstractBasic {
 		} catch (\Exception $e) {
 			$class = get_class($e);
 			$msg = $e->getMessage();
-			\OC::$server->get(LoggerInterface::class)->error($e->getMessage(), ['exception' => $e]);
+			$this->logger->error($e->getMessage(), ['exception' => $e]);
 			throw new ServiceUnavailable("$class: $msg");
 		}
 	}

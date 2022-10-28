@@ -67,6 +67,8 @@ OCA.Sharing.PublicApp = {
 			this.$showGridView.on('change', _.bind(this._onGridviewChange, this));
 			$('#view-toggle').tooltip({placement: 'bottom', trigger: 'hover'});
 
+			// note: password not be required, the endpoint
+			// will recognize previous validation from the session
 			var filesClient = new OC.Files.Client({
 				host: OC.getHost(),
 				port: OC.getPort(),

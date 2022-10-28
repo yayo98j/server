@@ -22,6 +22,8 @@
 			var output = this.template();
 			var token = $('#sharingToken').val()
 
+			// note: password not be required, the endpoint
+			// will recognize previous validation from the session
 			var filesClient = new OC.Files.Client({
 				host: OC.getHost(),
 				port: OC.getPort(),
@@ -46,18 +48,6 @@
 			data.url = base + OC.getRootPath() + '/public.php/dav/files/' + token + '/' + encodeURI(name);
 
 			data.multipart = false;
-
-			if (!data.headers) {
-				data.headers = {};
-			}
-
-			var userName = filesClient.getUserName();
-			var password = filesClient.getPassword();
-			if (userName) {
-				// copy username/password from DAV client
-				data.headers['Authorization'] =
-					'Basic ' + btoa(userName + ':' + (password || ''));
-			}
 
 			$('#drop-upload-done-indicator').addClass('hidden');
 			$('#drop-upload-progress-indicator').removeClass('hidden');
