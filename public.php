@@ -33,6 +33,14 @@
 require_once __DIR__ . '/lib/versioncheck.php';
 
 /**
+ * Class RemoteException
+ * Dummy exception class to be use locally to identify certain conditions
+ * Will not be logged to avoid DoS
+ */
+class RemoteException extends Exception {
+}
+
+/**
  * @param $service
  * @return string
  */

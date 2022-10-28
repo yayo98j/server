@@ -29,35 +29,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  *
  */
+
+use OCA\DAV\Connector\Sabre\PublicAuth;
+use OCA\DAV\Connector\Sabre\ServerFactory;
+use Sabre\DAV\Auth\Plugin;
+
 // load needed apps
 $RUNTIME_APPTYPES = ['filesystem', 'authentication', 'logging'];
-
 OC_App::loadApps($RUNTIME_APPTYPES);
 
+// Turn off output buffering to prevent memory problems
 OC_Util::obEnd();
 \OC::$server->getSession()->close();
 
 // Backends
-$authBackend = new OCA\DAV\Connector\Sabre\PublicAuth(
-	\OC::$server->getRequest(),
-	\OC::$server->getShareManager(),
-	\OC::$server->getSession(),
-	\OC::$server->getBruteForceThrottler()
-);
-$authPlugin = new \Sabre\DAV\Auth\Plugin($authBackend);
-
-$serverFactory = new OCA\DAV\Connector\Sabre\ServerFactory(
-	\OC::$server->getConfig(),
-	\OC::$server->get(Psr\Log\LoggerInterface::class),
-	\OC::$server->getDatabaseConnection(),
-	\OC::$server->getUserSession(),
-	\OC::$server->getMountManager(),
-	\OC::$server->getTagManager(),
-	\OC::$server->getRequest(),
-	\OC::$server->getPreviewManager(),
-	\OC::$server->getEventDispatcher(),
-	\OC::$server->getL10N('dav')
-);
+$authBackend = \OCP\Server::get(PublicAuth::class);
+$authPlugin = new Plugin($authBackend);
+$serverFactory = \OCP\Server::get(ServerFactory::class);
 
 $requestUri = \OC::$server->getRequest()->getRequestUri();
 
@@ -99,7 +87,7 @@ $server = $serverFactory->createServer($baseuri, $requestUri, $authPlugin, funct
 	$fileInfo = $ownerView->getFileInfo($path);
 	$linkCheckPlugin->setFileInfo($fileInfo);
 
-	// If not readble (files_drop) enable the filesdrop plugin
+	// If not readable (files_drop) enable the filesdrop plugin
 	if (!$isReadable) {
 		$filesDropPlugin->enable();
 	}

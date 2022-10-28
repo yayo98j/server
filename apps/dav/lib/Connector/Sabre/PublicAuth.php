@@ -57,12 +57,11 @@ class PublicAuth extends AbstractBasic {
 	private const BRUTEFORCE_ACTION = 'public_dav_auth';
 	public const DAV_AUTHENTICATED = 'public_link_authenticated';
 
-	private IShare $share;
+	private ?IShare $share = null;
 	private IManager $shareManager;
 	private ISession $session;
 	private IRequest $request;
 	private Throttler $throttler;
-
 
 	public function __construct(IRequest $request,
 								IManager $shareManager,
@@ -139,6 +138,7 @@ class PublicAuth extends AbstractBasic {
 		$token = $this->getToken();
 
 		try {
+			/** @var IShare $share */
 			$share = $this->shareManager->getShareByToken($token);
 		} catch (ShareNotFound $e) {
 			$this->throttler->registerAttempt(self::BRUTEFORCE_ACTION, $this->request->getRemoteAddress());
@@ -224,6 +224,7 @@ class PublicAuth extends AbstractBasic {
 	}
 
 	public function getShare(): IShare {
+		assert($this->share !== null);
 		return $this->share;
 	}
 }

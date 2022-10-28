@@ -70,10 +70,7 @@ OCA.Sharing.PublicApp = {
 			var filesClient = new OC.Files.Client({
 				host: OC.getHost(),
 				port: OC.getPort(),
-				userName: token,
-				// note: password not be required, the endpoint
-				// will recognize previous validation from the session
-				root: OC.getRootPath() + '/public.php/webdav',
+				root: OC.getRootPath() + '/public.php/dav/files/' + token,
 				useHTTPS: OC.getProtocol() === 'https'
 			});
 

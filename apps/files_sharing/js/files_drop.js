@@ -20,14 +20,12 @@
 		addFileToUpload: function(e, data) {
 			var errors = [];
 			var output = this.template();
+			var token = $('#sharingToken').val()
 
 			var filesClient = new OC.Files.Client({
 				host: OC.getHost(),
 				port: OC.getPort(),
-				userName: $('#sharingToken').val(),
-				// note: password not be required, the endpoint
-				// will recognize previous validation from the session
-				root: OC.getRootPath() + '/public.php/webdav',
+				root: OC.getRootPath() + '/public.php/dav/files/' + token,
 				useHTTPS: OC.getProtocol() === 'https'
 			});
 
@@ -45,7 +43,7 @@
 				return false;
 			}
 			var base = OC.getProtocol() + '://' + OC.getHost();
-			data.url = base + OC.getRootPath() + '/public.php/webdav/' + encodeURI(name);
+			data.url = base + OC.getRootPath() + '/public.php/dav/files/' + token + '/' + encodeURI(name);
 
 			data.multipart = false;
 

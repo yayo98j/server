@@ -44,6 +44,7 @@ use Sabre\DAV\Auth\Backend\AbstractBasic;
  */
 class LegacyPublicAuth extends AbstractBasic {
 	private const BRUTEFORCE_ACTION = 'legacy_public_webdav_auth';
+	public const DAV_AUTHENTICATED = 'legacy_public_link_authenticated';
 
 	private ?IShare $share = null;
 	private IManager $shareManager;
@@ -98,8 +99,8 @@ class LegacyPublicAuth extends AbstractBasic {
 				|| $share->getShareType() === IShare::TYPE_CIRCLE) {
 				if ($this->shareManager->checkPassword($share, $password)) {
 					return true;
-				} elseif ($this->session->exists(PublicAuth::DAV_AUTHENTICATED)
-					&& $this->session->get(PublicAuth::DAV_AUTHENTICATED) === (string)$share->getId()) {
+				} elseif ($this->session->exists(self::DAV_AUTHENTICATED)
+					&& $this->session->get(self::DAV_AUTHENTICATED) === (string)$share->getId()) {
 					return true;
 				} else {
 					if (in_array('XMLHttpRequest', explode(',', $this->request->getHeader('X-Requested-With')))) {
