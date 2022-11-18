@@ -40,8 +40,8 @@ Vue.use(Router)
  * ensure the proper route.
  * ⚠️ Routes needs to match the php routes.
  */
-
-export default new Router({
+const baseTitle = document.title
+const router = new Router({
 	mode: 'history',
 	// if index.php is in the url AND we got this far, then it's working:
 	// let's keep using index.php in the url
@@ -53,10 +53,26 @@ export default new Router({
 			component: Users,
 			props: true,
 			name: 'users',
+			meta: {
+				title: () => {
+					return t('settings', 'Active users')
+				},
+			},
 			children: [
 				{
 					path: ':selectedGroup',
 					name: 'group',
+					meta: {
+						title: (to) => {
+							if (to.params.selectedGroup === 'admin' ) {
+								return t('settings', 'Admins')
+							} else if (to.params.selectedGroup === 'disabled') {
+								return t('settings', 'Disabled users')
+							} else {
+								return decodeURIComponent(to.params.selectedGroup)
+							}
+						}
+					},
 					component: Users,
 				},
 			],
@@ -83,3 +99,14 @@ export default new Router({
 		},
 	],
 })
+
+router.afterEach(async (to) => {
+	const metaTitle = await to.meta.title?.(to)
+	if (metaTitle) {
+		document.title = metaTitle + ` - ${baseTitle}`
+	} else {
+		document.title = baseTitle
+	}
+})
+
+export default router
