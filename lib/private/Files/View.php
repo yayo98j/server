@@ -1196,6 +1196,14 @@ class View {
 				}
 				if ($result && in_array('write', $hooks, true) && $operation !== 'fopen' && $operation !== 'touch') {
 					$this->writeUpdate($storage, $internalPath);
+					$cache = $storage->getCache($internalPath);
+					$data = $cache->get($internalPath);
+					$cacheSize = $data ? $data->getSize() : -1;
+					$storageSize = $this->filesize($path);
+					if ($cacheSize !== $storageSize) {
+						$this->logger->error('File size is different on file cache (' . $cacheSize . ') and storage (' . $storageSize . ') ' .
+							'Storage operation result: ' . $result, ['exception' => new \Exception()]);
+					}
 				}
 				if ($result && in_array('touch', $hooks)) {
 					$this->writeUpdate($storage, $internalPath, $extraParam);
