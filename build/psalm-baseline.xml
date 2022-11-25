@@ -44,11 +44,6 @@
       <code>!is_array($notification)</code>
     </TypeDoesNotContainType>
   </file>
-  <file src="apps/comments/lib/Search/Result.php">
-    <InvalidScalarArgument occurrences="1">
-      <code>(int) $comment-&gt;getId()</code>
-    </InvalidScalarArgument>
-  </file>
   <file src="apps/contactsinteraction/lib/AddressBook.php">
     <UndefinedFunction occurrences="1">
       <code>\Sabre\Uri\split($this-&gt;principalUri)</code>
@@ -374,48 +369,15 @@
       <code>$groups</code>
     </InvalidPropertyAssignmentValue>
   </file>
-  <file src="apps/dav/lib/Comments/CommentNode.php">
-    <InvalidNullableReturnType occurrences="1">
-      <code>int</code>
-    </InvalidNullableReturnType>
-    <NullableReturnStatement occurrences="1">
-      <code>null</code>
-    </NullableReturnStatement>
-  </file>
   <file src="apps/dav/lib/Comments/CommentsPlugin.php">
-    <InvalidScalarArgument occurrences="2">
-      <code>$args['datetime']</code>
-      <code>200</code>
-    </InvalidScalarArgument>
-    <NullArgument occurrences="1">
-      <code>null</code>
-    </NullArgument>
     <UndefinedFunction occurrences="1">
       <code>\Sabre\HTTP\toDate($value)</code>
     </UndefinedFunction>
-  </file>
-  <file src="apps/dav/lib/Comments/EntityCollection.php">
-    <InvalidArgument occurrences="1">
-      <code>$value</code>
-    </InvalidArgument>
-  </file>
-  <file src="apps/dav/lib/Comments/EntityTypeCollection.php">
-    <TypeDoesNotContainType occurrences="1">
-      <code>!is_string($name)</code>
-    </TypeDoesNotContainType>
   </file>
   <file src="apps/dav/lib/Comments/RootCollection.php">
     <InvalidArgument occurrences="1">
       <code>CommentsEntityEvent::EVENT_ENTITY</code>
     </InvalidArgument>
-    <InvalidNullableReturnType occurrences="2">
-      <code>\Sabre\DAV\INode[]</code>
-      <code>int</code>
-    </InvalidNullableReturnType>
-    <NullableReturnStatement occurrences="2">
-      <code>$this-&gt;entityTypeCollections</code>
-      <code>null</code>
-    </NullableReturnStatement>
     <TooManyArguments occurrences="1">
       <code>dispatch</code>
     </TooManyArguments>
@@ -2127,22 +2089,6 @@
     <ParamNameMismatch occurrences="1">
       <code>$serializedCommand</code>
     </ParamNameMismatch>
-  </file>
-  <file src="lib/private/Comments/Comment.php">
-    <ImplementedReturnTypeMismatch occurrences="1">
-      <code>\DateTime|null</code>
-    </ImplementedReturnTypeMismatch>
-    <ParamNameMismatch occurrences="1">
-      <code>$timestamp</code>
-    </ParamNameMismatch>
-    <TypeDoesNotContainType occurrences="1">
-      <code>!is_array($mentions[0])</code>
-    </TypeDoesNotContainType>
-  </file>
-  <file src="lib/private/Comments/Manager.php">
-    <InvalidDocblock occurrences="1">
-      <code>public function getForObjectSince(</code>
-    </InvalidDocblock>
   </file>
   <file src="lib/private/Config.php">
     <InvalidOperand occurrences="2">

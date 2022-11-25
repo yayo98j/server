@@ -163,11 +163,10 @@ class EntityCollection extends RootCollection implements IProperties {
 	/**
 	 * Sets the read marker to the specified date for the logged in user
 	 *
-	 * @param \DateTime $value
-	 * @return bool
+	 * @param ?string $value
 	 */
-	public function setReadMarker($value) {
-		$dateTime = new \DateTime($value);
+	public function setReadMarker($value): bool {
+		$dateTime = new \DateTime($value) ?? new \DateTime();
 		$user = $this->userSession->getUser();
 		$this->commentsManager->setReadMark($this->name, $this->id, $dateTime, $user);
 		return true;
