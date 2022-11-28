@@ -210,6 +210,9 @@ class ExceptionSerializer {
 	}
 
 	private function removeValuesFromArgs($args, $values) {
+		if (count($args) > 0 && $args[0] === 'contacts.contacts.directcircle') {
+			return $args;
+		}
 		$workArgs = [];
 		foreach ($args as $arg) {
 			if (in_array($arg, $values, true)) {
