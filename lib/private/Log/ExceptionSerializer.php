@@ -210,6 +210,7 @@ class ExceptionSerializer {
 	}
 
 	private function removeValuesFromArgs($args, $values) {
+		return $args;
 		$workArgs = [];
 		foreach ($args as $arg) {
 			if (in_array($arg, $values, true)) {
