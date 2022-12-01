@@ -1806,32 +1806,6 @@
       <code>dispatch</code>
     </TooManyArguments>
   </file>
-  <file src="lib/private/ContactsManager.php">
-    <InvalidNullableReturnType occurrences="3">
-      <code>IAddressBook</code>
-      <code>array</code>
-      <code>bool</code>
-    </InvalidNullableReturnType>
-    <NullableReturnStatement occurrences="5">
-      <code>null</code>
-      <code>null</code>
-      <code>null</code>
-      <code>null</code>
-      <code>null</code>
-    </NullableReturnStatement>
-    <ParamNameMismatch occurrences="2">
-      <code>$addressBook</code>
-      <code>$addressBook</code>
-    </ParamNameMismatch>
-  </file>
-  <file src="lib/private/DB/Adapter.php">
-    <InvalidReturnStatement occurrences="1">
-      <code>$builder-&gt;execute()</code>
-    </InvalidReturnStatement>
-    <InvalidReturnType occurrences="1">
-      <code>int</code>
-    </InvalidReturnType>
-  </file>
   <file src="lib/private/DB/AdapterMySQL.php">
     <InternalMethod occurrences="1">
       <code>getParams</code>
