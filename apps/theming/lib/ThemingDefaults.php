@@ -481,6 +481,7 @@ class ThemingDefaults extends \OC_Defaults {
 			case 'background':
 			case 'favicon':
 				$this->imageManager->delete($setting);
+				$this->config->deleteAppValue('theming', $setting . 'Mime');
 				break;
 		}
 

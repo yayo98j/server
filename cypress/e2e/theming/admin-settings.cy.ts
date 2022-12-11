@@ -90,7 +90,7 @@ describe('Change the primary color and reset it', function() {
 	})
 })
 
-describe('Remove the default background and restore it', function() {
+describe.only('Remove the default background and restore it', function() {
 	before(function() {
 		// Just in case previous test failed
 		cy.resetAdminTheming()
@@ -120,7 +120,7 @@ describe('Remove the default background and restore it', function() {
 		cy.logout()
 		cy.visit('/')
 
-		cy.waitUntil(() => validateBodyThemingCss(defaultPrimary, ''))
+		cy.waitUntil(() => validateBodyThemingCss(defaultPrimary, null))
 		cy.screenshot()
 	})
 
@@ -169,7 +169,7 @@ describe('Remove the default background with a custom primary color', function()
 		cy.logout()
 		cy.visit('/')
 
-		cy.waitUntil(() => validateBodyThemingCss(selectedColor, ''))
+		cy.waitUntil(() => validateBodyThemingCss(selectedColor, null))
 		cy.screenshot()
 	})
 
@@ -211,7 +211,7 @@ describe('Remove the default background with a bright color', function() {
 		cy.get('.color-picker__simple-color-circle:eq(4)').click()
 
 		cy.wait('@setColor')
-		cy.waitUntil(() => validateBodyThemingCss('#ddcb55', ''))
+		cy.waitUntil(() => validateBodyThemingCss('#ddcb55', null))
 	})
 
 	it('See the header being inverted', function() {

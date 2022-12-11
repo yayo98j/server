@@ -93,7 +93,7 @@ describe('User select shipped backgrounds and remove background', function() {
 
 		// Validate clear background
 		cy.wait('@clearBackground')
-		cy.waitUntil(() => validateBodyThemingCss('#56633d', ''))
+		cy.waitUntil(() => validateBodyThemingCss('#56633d', null))
 	})
 })
 
@@ -143,7 +143,7 @@ describe('User select a bright custom color and remove background', function() {
 
 		// Validate clear background
 		cy.wait('@clearBackground')
-		cy.waitUntil(() => validateBodyThemingCss(undefined, ''))
+		cy.waitUntil(() => validateBodyThemingCss(undefined, null))
 	})
 
 	it('Select a custom color', function() {
