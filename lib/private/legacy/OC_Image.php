@@ -779,6 +779,7 @@ class OC_Image implements \OCP\IImage {
 	 * @return bool|resource|\GdImage An image resource or false on error
 	 */
 	public function loadFromData(string $str) {
+		return false;
 		if (!$this->checkImageDataSize($str)) {
 			return false;
 		}
