@@ -23,12 +23,10 @@ $COMPOSER_COMMAND dump-autoload -d $REPODIR
 
 for app in ${REPODIR}/apps/*; do
     if [[ -d $app ]]; then
-        if [[ -e ${app}/composer/composer.json ]]; then
-            echo
-            echo "Regenerating composer files for ${app}"
-            $COMPOSER_COMMAND i --no-dev -d ${app}/composer
-            $COMPOSER_COMMAND dump-autoload -d ${app}/composer
-        fi
+		echo
+		echo "Regenerating composer files for ${app}"
+		$COMPOSER_COMMAND i --no-dev -d ${app}/composer || exit 1
+		$COMPOSER_COMMAND dump-autoload -d ${app}/composer || exit 1
     fi
 done
 
