@@ -272,6 +272,14 @@ class SCSSCacher {
 	private function variablesChanged(): bool {
 		$cachedVariables = $this->config->getAppValue('core', 'theming.variables', '');
 		$injectedVariables = $this->getInjectedVariables($cachedVariables);
+		if (empty($injectedVariables)) {
+			\OC::$server->getLogger()->logException(new \Exception('Empty variables: ' . var_export($injectedVariables, true) . ', this should not happen. Request URL: ' .
+				\OC::$server->getRequest()->getServerProtocol() . '://' .
+				\OC::$server->getRequest()->getServerHost() .
+				\OC::$server->getRequest()->getRequestUri()
+			));
+			return false;
+		}
 		if ($cachedVariables !== md5($injectedVariables)) {
 			$this->logger->debug('SCSSCacher::variablesChanged storedVariables: ' . json_encode($this->config->getAppValue('core', 'theming.variables')) . ' currentInjectedVariables: ' . json_encode($injectedVariables), ['app' => 'scss_cacher']);
 			$this->config->setAppValue('core', 'theming.variables', md5($injectedVariables));
