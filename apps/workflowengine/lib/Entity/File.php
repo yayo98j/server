@@ -33,7 +33,6 @@ use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
 use OCP\IL10N;
-use OCP\ILogger;
 use OCP\IURLGenerator;
 use OCP\IUser;
 use OCP\IUserManager;
@@ -49,6 +48,7 @@ use OCP\WorkflowEngine\EntityContext\IUrl;
 use OCP\WorkflowEngine\GenericEntityEvent;
 use OCP\WorkflowEngine\IEntity;
 use OCP\WorkflowEngine\IRuleMatcher;
+use Psr\Log\LoggerInterface;
 
 class File implements IEntity, IDisplayText, IUrl, IIcon, IContextPortation {
 	private const EVENT_NAMESPACE = '\OCP\Files::';
@@ -59,7 +59,7 @@ class File implements IEntity, IDisplayText, IUrl, IIcon, IContextPortation {
 	protected $urlGenerator;
 	/** @var IRootFolder */
 	protected $root;
-	/** @var ILogger */
+	/** @var LoggerInterface */
 	protected $logger;
 	/** @var string */
 	protected $eventName;
@@ -82,7 +82,7 @@ class File implements IEntity, IDisplayText, IUrl, IIcon, IContextPortation {
 		IL10N $l10n,
 		IURLGenerator $urlGenerator,
 		IRootFolder $root,
-		ILogger $logger,
+		LoggerInterface $logger,
 		ShareManager $shareManager,
 		IUserSession $userSession,
 		ISystemTagManager $tagManager,

@@ -39,13 +39,14 @@ use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\AppFramework\QueryException;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventDispatcher;
-use OCP\ILogger;
-use OCP\IServerContainer;
 use OCP\WorkflowEngine\Events\LoadSettingsScriptsEvent;
 use OCP\WorkflowEngine\IEntity;
 use OCP\WorkflowEngine\IEntityCompat;
 use OCP\WorkflowEngine\IOperation;
 use OCP\WorkflowEngine\IOperationCompat;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
 class Application extends App implements IBootstrap {
 	public const APP_ID = 'workflowengine';
@@ -68,10 +69,10 @@ class Application extends App implements IBootstrap {
 	}
 
 	private function registerRuleListeners(IEventDispatcher $dispatcher,
-										   IServerContainer $container,
-										   ILogger $logger): void {
+										   ContainerInterface $container,
+										   LoggerInterface $logger): void {
 		/** @var Manager $manager */
-		$manager = $container->query(Manager::class);
+		$manager = $container->get(Manager::class);
 		$configuredEvents = $manager->getAllConfiguredEvents();
 
 		foreach ($configuredEvents as $operationClass => $events) {
@@ -83,9 +84,9 @@ class Application extends App implements IBootstrap {
 							$ruleMatcher = $manager->getRuleMatcher();
 							try {
 								/** @var IEntity $entity */
-								$entity = $container->query($entityClass);
+								$entity = $container->get($entityClass);
 								/** @var IOperation $operation */
-								$operation = $container->query($operationClass);
+								$operation = $container->get($operationClass);
 
 								$ruleMatcher->setEventName($eventName);
 								$ruleMatcher->setEntity($entity);
@@ -98,7 +99,7 @@ class Application extends App implements IBootstrap {
 									->setEventName($eventName);
 
 								/** @var Logger $flowLogger */
-								$flowLogger = $container->query(Logger::class);
+								$flowLogger = $container->get(Logger::class);
 								$flowLogger->logEventInit($ctx);
 
 								if ($event instanceof Event) {
@@ -121,7 +122,7 @@ class Application extends App implements IBootstrap {
 									);
 								}
 								$flowLogger->logEventDone($ctx);
-							} catch (QueryException $e) {
+							} catch (ContainerExceptionInterface $e) {
 								// Ignore query exceptions since they might occur when an entity/operation were setup before by an app that is disabled now
 							}
 						}

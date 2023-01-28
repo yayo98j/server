@@ -36,7 +36,7 @@ use OCP\Log\ILogFactory;
 use Psr\Log\LoggerInterface;
 
 class Logger {
-	/** @var ILogger */
+	/** @var LoggerInterface */
 	protected $generalLogger;
 	/** @var LoggerInterface */
 	protected $flowLogger;
@@ -45,7 +45,7 @@ class Logger {
 	/** @var ILogFactory */
 	private $logFactory;
 
-	public function __construct(ILogger $generalLogger, IConfig $config, ILogFactory $logFactory) {
+	public function __construct(LoggerInterface $generalLogger, IConfig $config, ILogFactory $logFactory) {
 		$this->generalLogger = $generalLogger;
 		$this->config = $config;
 		$this->logFactory = $logFactory;
