@@ -20,6 +20,7 @@ jobs:
         variant:
           - ""
           - "-gssapi"
+          - "-fpm-gssapi"
 
     name: smb-kerberos-sso${{ matrix.variant }})
 
