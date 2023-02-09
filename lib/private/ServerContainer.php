@@ -166,13 +166,20 @@ class ServerContainer extends SimpleContainer {
 		return parent::query($name, $autoload);
 	}
 
+	public function queryNoApps(string $name, bool $autoload = true) {
+		if ($this->isResolved($name)) {
+			return $this->items[$name];
+		}
+		return parent::query($name, $autoload);
+	}
+
 	/**
 	 * @internal
 	 * @param string $id
 	 * @return DIContainer|null
 	 */
 	public function getAppContainerForService(string $id): ?DIContainer {
-		if (strpos($id, 'OCA\\') !== 0 || substr_count($id, '\\') < 2) {
+		if (!str_starts_with($id, 'OCA\\') || substr_count($id, '\\') < 2) {
 			return null;
 		}
 
