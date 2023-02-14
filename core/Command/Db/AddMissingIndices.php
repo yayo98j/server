@@ -182,6 +182,16 @@ class AddMissingIndices extends Command {
 				$updated = true;
 				$output->writeln('<info>Filecache table updated successfully.</info>');
 			}
+			if (!$table->hasIndex('fs_storage') && !$schema->getDatabasePlatform() instanceof PostgreSQL94Platform) {
+				$output->writeln('<info>Adding additional storage index to the filecache table, this can take some time...</info>');
+				$table->addIndex(['storage'], 'fs_storage', [], ['lengths' => [null, 64]]);
+				$sqlQueries = $this->connection->migrateToSchema($schema->getWrappedSchema(), $dryRun);
+				if ($dryRun && $sqlQueries !== null) {
+					$output->writeln($sqlQueries);
+				}
+				$updated = true;
+				$output->writeln('<info>Filecache table updated successfully.</info>');
+			}
 		}
 
 		$output->writeln('<info>Check indices of the twofactor_providers table.</info>');
