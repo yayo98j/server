@@ -36,6 +36,7 @@
 namespace OC\Files\Cache;
 
 use Doctrine\DBAL\Exception;
+use OC\Files\Storage\Wrapper\Encryption;
 use OCP\Files\Cache\IScanner;
 use OCP\Files\ForbiddenException;
 use OCP\Files\Storage\IReliableEtagStorage;
@@ -399,8 +400,15 @@ class Scanner extends BasicEmitter implements IScanner {
 			}
 		}
 		$oldSize = $data['size'] ?? null;
-		if ($this->cacheActive && $oldSize !== $size) {
-			$this->cache->update($folderId, ['size' => $size]);
+
+		// for encrypted storages, we trigger a regular folder size calculation instead of using the calculated size
+		// to make sure we also updated the unencrypted-size where applicable
+		if ($this->storage->instanceOfStorage(Encryption::class)) {
+			$this->cache->calculateFolderSize($path);
+		} else {
+			if ($this->cacheActive && $oldSize !== $size) {
+				$this->cache->update($folderId, ['size' => $size]);
+			}
 		}
 		$this->emit('\OC\Files\Cache\Scanner', 'postScanFolder', [$path, $this->storageId]);
 		return $size;
