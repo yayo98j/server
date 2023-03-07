@@ -27,12 +27,14 @@ namespace OC\Files\Cache;
 
 use OC\Files\Search\QueryOptimizer\QueryOptimizer;
 use OC\Files\Search\SearchBinaryOperator;
+use OC\Files\Search\SearchComparison;
 use OC\SystemConfig;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\Files\Cache\ICache;
 use OCP\Files\Cache\ICacheEntry;
 use OCP\Files\IMimeTypeLoader;
 use OCP\Files\Search\ISearchBinaryOperator;
+use OCP\Files\Search\ISearchComparison;
 use OCP\Files\Search\ISearchQuery;
 use OCP\IDBConnection;
 use Psr\Log\LoggerInterface;
@@ -72,6 +74,38 @@ class QuerySearchHelper {
 			$this->systemConfig,
 			$this->logger
 		);
+	}
+
+	private function generateStorageFilters(array $caches): array {
+		// Pick up single file shares to prepare more efficient query
+		$storageToPathsMap = [];
+		$otherCaches = [];
+		foreach ($caches as $cache) {
+			if (($cache instanceof \OCA\Files_Sharing\Cache) and $cache->isFileShare()) {
+				$storage = $cache->getNumericStorageId();
+				$storageToPathsMap[$storage][] = $cache->getGetUnjailedRoot();
+			} else {
+				$otherCaches[] = $cache;
+			}
+		}
+
+		// Create filters for single file shares
+		$singleFileFilters = [];
+		foreach ($storageToPathsMap as $storage => $paths) {
+			$singleFileFilters[] = new SearchBinaryOperator(
+				ISearchBinaryOperator::OPERATOR_AND,
+				[
+					new SearchComparison(ISearchComparison::COMPARE_EQUAL, 'storage', $storage),
+					new SearchComparison(ISearchComparison::COMPARE_IN, 'path_hash', array_map(fn ($path) => md5($path), $paths))
+				]
+			);
+		}
+
+		$storageOtherFilters = array_map(function (ICache $cache) {
+			return $cache->getQueryFilterForStorage();
+		}, $otherCaches);
+
+		return array_merge($storageOtherFilters, $singleFileFilters);
 	}
 
 	/**
@@ -127,9 +161,7 @@ class QuerySearchHelper {
 				));
 		}
 
-		$storageFilters = array_values(array_map(function (ICache $cache) {
-			return $cache->getQueryFilterForStorage();
-		}, $caches));
+		$storageFilters = $this->generateStorageFilters($caches);
 		$storageFilter = new SearchBinaryOperator(ISearchBinaryOperator::OPERATOR_OR, $storageFilters);
 		$filter = new SearchBinaryOperator(ISearchBinaryOperator::OPERATOR_AND, [$searchQuery->getSearchOperation(), $storageFilter]);
 		$this->queryOptimizer->processOperator($filter);
