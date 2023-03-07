@@ -35,6 +35,7 @@ use OC\User\NoUserException;
 use OCP\Encryption\Keys\IStorage;
 use OCP\IConfig;
 use OCP\Security\ICrypto;
+use Psr\Log\LoggerInterface;
 
 class Storage implements IStorage {
 
@@ -100,6 +101,11 @@ class Storage implements IStorage {
 	public function getFileKey($path, $keyId, $encryptionModuleId) {
 		$realFile = $this->util->stripPartialFileExtension($path);
 		$keyDir = $this->getFileKeyDir($encryptionModuleId, $realFile);
+
+		if (strpos($path, 'debug')) {
+			\OC::$server->get(LoggerInterface::class)->warning("loading key for $path from $keyDir$keyId", ['exception' => new \Exception("loading key for $path from $keyDir$keyId")]);
+		}
+
 		$key = $this->getKey($keyDir . $keyId)['key'];
 
 		if ($key === '' && $realFile !== $path) {
@@ -108,6 +114,10 @@ class Storage implements IStorage {
 			// rename a .part file over storage borders.
 			$keyDir = $this->getFileKeyDir($encryptionModuleId, $path);
 			$key = $this->getKey($keyDir . $keyId)['key'];
+
+			if (strpos($path, 'debug')) {
+				\OC::$server->get(LoggerInterface::class)->warning("first key was a dud, loading key for $path from $keyDir$keyId", ['exception' => new \Exception("first key was a dud, loading key for $path from $keyDir$keyId")]);
+			}
 		}
 
 		return base64_decode($key);
@@ -334,6 +344,10 @@ class Storage implements IStorage {
 	 * @return bool
 	 */
 	private function setKey($path, $key) {
+		if (strpos($path, 'debug')) {
+			\OC::$server->get(LoggerInterface::class)->warning("writing key at $path", ['exception' => new \Exception("writing key at $path")]);
+		}
+
 		$this->keySetPreparation(dirname($path));
 
 		$versionFromBeforeUpdate = $this->config->getSystemValue('version', '0.0.0.0');
@@ -368,8 +382,14 @@ class Storage implements IStorage {
 
 		// in case of system wide mount points the keys are stored directly in the data directory
 		if ($this->util->isSystemWideMountPoint($filename, $owner)) {
+			if (strpos($path, 'debug')) {
+				\OC::$server->get(LoggerInterface::class)->warning("key for $path is a system key", ['exception' => new \Exception("key for $path is a system key")]);
+			}
 			$keyPath = $this->root_dir . '/' . $this->keys_base_dir . $filename . '/';
 		} else {
+			if (strpos($path, 'debug')) {
+				\OC::$server->get(LoggerInterface::class)->warning("key for $path is a user key", ['exception' => new \Exception("key for $path is a user key")]);
+			}
 			$keyPath = $this->root_dir . '/' . $owner . $this->keys_base_dir . $filename . '/';
 		}
 
@@ -384,6 +404,9 @@ class Storage implements IStorage {
 	 * @return boolean
 	 */
 	public function renameKeys($source, $target) {
+		if (strpos($source, 'debug') || strpos($target, 'debug')) {
+			\OC::$server->get(LoggerInterface::class)->warning("moving keys for rename from $source to $target", ['exception' => new \Exception("moving keys for rename from $source to $target")]);
+		}
 		$sourcePath = $this->getPathToKeys($source);
 		$targetPath = $this->getPathToKeys($target);
 
@@ -406,6 +429,9 @@ class Storage implements IStorage {
 	 * @return boolean
 	 */
 	public function copyKeys($source, $target) {
+		if (strpos($source, 'debug') || strpos($target, 'debug')) {
+			\OC::$server->get(LoggerInterface::class)->warning("copying keys for copy from $source to $target", ['exception' => new \Exception("copying keys for copy from $source to $target")]);
+		}
 		$sourcePath = $this->getPathToKeys($source);
 		$targetPath = $this->getPathToKeys($target);
 

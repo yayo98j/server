@@ -33,6 +33,7 @@ namespace OC\Files\Stream;
 
 use Icewind\Streams\Wrapper;
 use OC\Encryption\Exceptions\EncryptionHeaderKeyExistsException;
+use Psr\Log\LoggerInterface;
 use function is_array;
 use function stream_context_create;
 
@@ -291,12 +292,18 @@ class Encryption extends Wrapper {
 			|| $mode === 'wb'
 			|| $mode === 'wb+'
 		) {
+			if (strpos($this->fullPath, 'debug')) {
+				\OC::$server->get(LoggerInterface::class)->warning("starting new encrypted file " . $this->fullPath, ['exception' => new \Exception("starting new encrypted file " . $this->fullPath)]);
+			}
 			// We're writing a new file so start write counter with 0 bytes
 			$this->unencryptedSize = 0;
 			$this->writeHeader();
 			$this->headerSize = $this->util->getHeaderSize();
 			$this->size = $this->headerSize;
 		} else {
+			if (strpos($this->fullPath, 'debug')) {
+				\OC::$server->get(LoggerInterface::class)->warning("opening existing encrypted file " . $this->fullPath, ['exception' => new \Exception("opening existing encrypted file " . $this->fullPath)]);
+			}
 			$this->skipHeader();
 		}
 

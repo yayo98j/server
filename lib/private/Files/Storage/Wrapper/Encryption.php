@@ -467,6 +467,9 @@ class Encryption extends Wrapper {
 				if (!is_resource($source)) {
 					return false;
 				}
+				if (strpos($path, 'debug')) {
+					$this->logger->warning("opening encrypted file $path", ['exception' => new \Exception("opening encrypted file $path")]);
+				}
 				$handle = \OC\Files\Stream\Encryption::wrap($source, $path, $fullPath, $header,
 					$this->uid, $encryptionModule, $this->storage, $this, $this->util, $this->fileHelper, $mode,
 					$size, $unencryptedSize, $headerSize, $signed);

@@ -43,6 +43,7 @@ use OCA\Encryption\Util;
 use OCP\Encryption\IEncryptionModule;
 use OCP\IL10N;
 use OCP\ILogger;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
