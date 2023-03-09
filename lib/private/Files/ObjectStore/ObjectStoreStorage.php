@@ -642,23 +642,22 @@ class ObjectStoreStorage extends \OC\Files\Storage\Common implements IChunkedFil
 	}
 
 	/**
-	 *
+	 * @return array
 	 * @throws GenericFileException
 	 */
-	public function putChunkedWritePart(string $targetPath, string $writeToken, string $chunkId, $data, $size = null): ?array {
+	public function putChunkedWritePart(string $targetPath, string $writeToken, string $chunkId, $data, $size = null): void {
 		if (!$this->objectStore instanceof IObjectStoreMultiPartUpload) {
 			throw new GenericFileException('Object store does not support multipart upload');
 		}
+
+		if (!is_numeric($chunkId)) {
+			throw new GenericFileException('Chunk ID must be numeric for S3 multipart upload');
+		}
+
 		$cacheEntry = $this->getCache()->get($targetPath);
 		$urn = $this->getURN($cacheEntry->getId());
 
-		$result = $this->objectStore->uploadMultipartPart($urn, $writeToken, (int)$chunkId, $data, $size);
-
-		$parts[$chunkId] = [
-			'PartNumber' => $chunkId,
-			'ETag' => trim($result->get('ETag'), '"')
-		];
-		return $parts[$chunkId];
+		$this->objectStore->uploadMultipartPart($urn, $writeToken, (int)$chunkId, $data, $size);
 	}
 
 	public function completeChunkedWrite(string $targetPath, string $writeToken): int {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 /*
- * @copyright Copyright (c) 2021 Julius Härtl <jus@bitgrid.net>
+ * @copyright Copyright (c) 2023 Julius Härtl <jus@bitgrid.net>
  *
  * @author Julius Härtl <jus@bitgrid.net>
  *
@@ -45,8 +45,6 @@ use Sabre\DAV\Exception\BadRequest;
 use Sabre\DAV\Exception\InsufficientStorage;
 use Sabre\DAV\Exception\NotFound;
 use Sabre\DAV\Exception\PreconditionFailed;
-use Sabre\DAV\ICollection;
-use Sabre\DAV\INode;
 use Sabre\DAV\Server;
 use Sabre\DAV\ServerPlugin;
 use Sabre\HTTP\RequestInterface;
@@ -54,12 +52,9 @@ use Sabre\HTTP\ResponseInterface;
 use Sabre\Uri;
 
 class ChunkingV2Plugin extends ServerPlugin {
-	/** @var Server */
-	private $server;
-	/** @var UploadFolder */
-	private $uploadFolder;
-	/** @var ICache */
-	private $cache;
+	private ?Server $server = null;
+	private ?UploadFolder$uploadFolder;
+	private ICache $cache;
 
 	private ?string $uploadId = null;
 	private ?string $uploadPath = null;
@@ -80,7 +75,7 @@ class ChunkingV2Plugin extends ServerPlugin {
 	/**
 	 * @inheritdoc
 	 */
-	public function initialize(Server $server) {
+	public function initialize(Server $server): void {
 		$server->on('afterMethod:MKCOL', [$this, 'afterMkcol']);
 		$server->on('beforeMethod:PUT', [$this, 'beforePut']);
 		$server->on('beforeMethod:DELETE', [$this, 'beforeDelete']);
@@ -89,12 +84,7 @@ class ChunkingV2Plugin extends ServerPlugin {
 		$this->server = $server;
 	}
 
-	/**
-	 * @param string $path
-	 * @param bool $createIfNotExists
-	 * @return FutureFile|UploadFile|ICollection|INode
-	 */
-	private function getUploadFile(string $path, bool $createIfNotExists = false) {
+	private function getUploadFile(string $path, bool $createIfNotExists = false): UploadFile|File {
 		try {
 			$actualFile = $this->server->tree->getNodeForPath($path);
 			// Only directly upload to the target file if it is on the same storage
@@ -153,6 +143,7 @@ class ChunkingV2Plugin extends ServerPlugin {
 		[$storage, $storagePath] = $this->getUploadStorage($this->uploadPath);
 
 		$chunkName = basename($request->getPath());
+		// S3 Multipart upload allows up to 10000 chunks at maximum and required them to be numeric
 		$partId = is_numeric($chunkName) ? (int)$chunkName : -1;
 		if (!($partId >= 1 && $partId <= 10000)) {
 			throw new BadRequest('Invalid chunk name, must be numeric between 1 and 10000');
@@ -165,7 +156,7 @@ class ChunkingV2Plugin extends ServerPlugin {
 		if ($this->uploadFolder->childExists(self::TEMP_TARGET) && $this->uploadPath) {
 			/** @var UploadFile $tempTargetFile */
 			$tempTargetFile = $this->uploadFolder->getChild(self::TEMP_TARGET);
-			[$destinationDir, $destinationName] = Uri\split($this->uploadPath);
+			[$destinationDir, ] = Uri\split($this->uploadPath);
 			/** @var Directory $destinationParent */
 			$destinationParent = $this->server->tree->getNodeForPath($destinationDir);
 			$free = $storage->free_space($destinationParent->getInternalPath());
@@ -187,14 +178,14 @@ class ChunkingV2Plugin extends ServerPlugin {
 		return false;
 	}
 
-	public function beforeMove($sourcePath, $destination): bool {
+	public function beforeMove(string $sourcePath, string $destination): bool {
 		try {
 			$this->prepareUpload(dirname($sourcePath));
 			$this->checkPrerequisites();
 		} catch (StorageInvalidException|BadRequest|NotFound|PreconditionFailed $e) {
 			return true;
 		}
-		[$storage, $storagePath] = $this->getUploadStorage($this->uploadPath);
+		[$storage, ] = $this->getUploadStorage($this->uploadPath);
 
 		$targetFile = $this->getUploadFile($this->uploadPath);
 
@@ -253,7 +244,7 @@ class ChunkingV2Plugin extends ServerPlugin {
 		return false;
 	}
 
-	public function beforeDelete(RequestInterface $request, ResponseInterface $response) {
+	public function beforeDelete(RequestInterface $request, ResponseInterface $response): bool {
 		try {
 			$this->prepareUpload($request->getPath());
 			if (!$this->uploadFolder instanceof UploadFolder) {
@@ -308,8 +299,12 @@ class ChunkingV2Plugin extends ServerPlugin {
 	/**
 	 * @throws NotFound
 	 */
-	public function prepareUpload($path): void {
-		$this->uploadFolder = $this->server->tree->getNodeForPath($path);
+	public function prepareUpload(string $path): void {
+		$uploadFolder = $this->server->tree->getNodeForPath($path);
+		if (!$uploadFolder instanceof UploadFolder) {
+			throw new \RuntimeException('Unexpected node returned, should be the upload folder');
+		}
+		$this->uploadFolder = $uploadFolder;
 		$uploadMetadata = $this->cache->get($this->uploadFolder->getName());
 		$this->uploadId = $uploadMetadata[self::UPLOAD_ID] ?? null;
 		$this->uploadPath = $uploadMetadata[self::UPLOAD_TARGET_PATH] ?? null;

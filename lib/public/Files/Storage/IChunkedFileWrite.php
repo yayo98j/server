@@ -1,6 +1,9 @@
 <?php
+
+declare(strict_types=1);
+
 /*
- * @copyright Copyright (c) 2021 Julius Härtl <jus@bitgrid.net>
+ * @copyright Copyright (c) 2023 Julius Härtl <jus@bitgrid.net>
  *
  * @author Julius Härtl <jus@bitgrid.net>
  *
@@ -21,7 +24,6 @@
  *
  */
 
-declare(strict_types=1);
 
 
 namespace OCP\Files\Storage;
@@ -49,7 +51,7 @@ interface IChunkedFileWrite extends IStorage {
 	 * @throws GenericFileException
 	 * @since 26.0.0
 	 */
-	public function putChunkedWritePart(string $targetPath, string $writeToken, string $chunkId, $data, int $size = null): ?array;
+	public function putChunkedWritePart(string $targetPath, string $writeToken, string $chunkId, $data, int $size = null): void;
 
 	/**
 	 * @param string $targetPath
