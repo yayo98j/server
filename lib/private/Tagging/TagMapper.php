@@ -32,6 +32,7 @@ use OCP\DB\QueryBuilder\IQueryBuilder;
 
 /**
  * Mapper for Tag entity
+ * @template-extends QBMapper<Tag>
  */
 class TagMapper extends QBMapper {
 	/**
