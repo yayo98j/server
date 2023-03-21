@@ -16,9 +16,6 @@
     </MoreSpecificImplementedParamType>
   </file>
   <file src="3rdparty/sabre/dav/lib/CardDAV/AddressBook.php">
-    <LessSpecificImplementedReturnType occurrences="1">
-      <code>array</code>
-    </LessSpecificImplementedReturnType>
     <MoreSpecificImplementedParamType occurrences="1">
       <code>$vcardData</code>
     </MoreSpecificImplementedParamType>
@@ -29,6 +26,11 @@
     </InvalidPropertyAssignmentValue>
     <MoreSpecificImplementedParamType occurrences="1">
       <code>$data</code>
+    </MoreSpecificImplementedParamType>
+  </file>
+  <file src="3rdparty/sabre/dav/lib/CardDAV/Card.php">
+    <MoreSpecificImplementedParamType occurrences="1">
+      <code>$cardData</code>
     </MoreSpecificImplementedParamType>
   </file>
   <file src="3rdparty/sabre/dav/lib/DAVACL/AbstractPrincipalCollection.php">
