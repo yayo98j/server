@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace OCA\Settings\WellKnown;
 
 use OCP\AppFramework\Http\RedirectResponse;
+use OCP\AppFramework\Http\Response;
 use OCP\Http\WellKnown\GenericResponse;
 use OCP\Http\WellKnown\IHandler;
 use OCP\Http\WellKnown\IRequestContext;
@@ -45,6 +46,7 @@ class ChangePasswordHandler implements IHandler {
 			return $previousResponse;
 		}
 
+		/** @var Response $response */
 		$response = new RedirectResponse($this->urlGenerator->linkToRouteAbsolute('settings.PersonalSettings.index', ['section' => 'security']));
 		return new GenericResponse($response);
 	}
