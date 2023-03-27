@@ -4,7 +4,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # PHP
 RUN apt-get update -y && \
-    apt install -y apache2 vim software-properties-common sudo nano
+    apt install -y apache2 vim software-properties-common sudo nano gnupg2
 
 RUN apt-get install --no-install-recommends -y \
     php8.1 \
@@ -52,7 +52,7 @@ RUN apt-get -y install \
     curl \
     gnupg-agent \
     software-properties-common && \
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \    
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
     add-apt-repository \
    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
    $(lsb_release -cs) \
