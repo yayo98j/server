@@ -27,6 +27,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  *
  */
+
 namespace OC\Files\ObjectStore;
 
 use Icewind\Streams\CallbackWrapper;
@@ -167,61 +168,63 @@ class ObjectStoreStorage extends \OC\Files\Storage\Common {
 
 	public function rmdir($path) {
 		$path = $this->normalizePath($path);
+		$entry = $this->getCache()->get($path);
 
-		if (!$this->is_dir($path)) {
+		if ($entry->getMimeType() !== ICacheEntry::DIRECTORY_MIMETYPE) {
 			return false;
 		}
 
-		if (!$this->rmObjects($path)) {
-			return false;
-		}
-
-		$this->getCache()->remove($path);
-
-		return true;
+		return $this->rmObjects($entry);
 	}
 
-	private function rmObjects($path) {
-		$children = $this->getCache()->getFolderContents($path);
+	private function rmObjects(ICacheEntry $entry): bool {
+		$children = $this->getCache()->getFolderContentsById($entry->getId());
 		foreach ($children as $child) {
-			if ($child['mimetype'] === 'httpd/unix-directory') {
-				if (!$this->rmObjects($child['path'])) {
+			if ($child->getMimeType() === ICacheEntry::DIRECTORY_MIMETYPE) {
+				if (!$this->rmObjects($child)) {
 					return false;
 				}
 			} else {
-				if (!$this->unlink($child['path'])) {
+				if (!$this->rmObject($child)) {
 					return false;
 				}
 			}
 		}
+
+		$this->getCache()->remove($entry->getPath());
 
 		return true;
 	}
 
 	public function unlink($path) {
 		$path = $this->normalizePath($path);
-		$stat = $this->stat($path);
+		$entry = $this->getCache()->get($path);
 
-		if ($stat && isset($stat['fileid'])) {
-			if ($stat['mimetype'] === 'httpd/unix-directory') {
-				return $this->rmdir($path);
+		if ($entry && $entry->getId() > 0) {
+			if ($entry->getMimeType() === ICacheEntry::DIRECTORY_MIMETYPE) {
+				return $this->rmObjects($entry);
+			} else {
+				return $this->rmObject($entry);
 			}
-			try {
-				$this->objectStore->deleteObject($this->getURN($stat['fileid']));
-			} catch (\Exception $ex) {
-				if ($ex->getCode() !== 404) {
-					$this->logger->logException($ex, [
-						'app' => 'objectstore',
-						'message' => 'Could not delete object ' . $this->getURN($stat['fileid']) . ' for ' . $path,
-					]);
-					return false;
-				}
-				//removing from cache is ok as it does not exist in the objectstore anyway
-			}
-			$this->getCache()->remove($path);
-			return true;
 		}
 		return false;
+	}
+
+	public function rmObject(ICacheEntry $entry): bool {
+		try {
+			$this->objectStore->deleteObject($this->getURN($entry->getId()));
+		} catch (\Exception $ex) {
+			if ($ex->getCode() !== 404) {
+				$this->logger->logException($ex, [
+					'app' => 'objectstore',
+					'message' => 'Could not delete object ' . $this->getURN($entry->getId()) . ' for ' . $entry->getPath(),
+				]);
+				return false;
+			}
+			//removing from cache is ok as it does not exist in the objectstore anyway
+		}
+		$this->getCache()->remove($entry->getPath());
+		return true;
 	}
 
 	public function stat($path) {
@@ -537,7 +540,12 @@ class ObjectStoreStorage extends \OC\Files\Storage\Common {
 		return $this->objectStore;
 	}
 
-	public function copyFromStorage(IStorage $sourceStorage, $sourceInternalPath, $targetInternalPath, $preserveMtime = false) {
+	public function copyFromStorage(
+		IStorage $sourceStorage,
+		$sourceInternalPath,
+		$targetInternalPath,
+		$preserveMtime = false
+	) {
 		if ($sourceStorage->instanceOfStorage(ObjectStoreStorage::class)) {
 			/** @var ObjectStoreStorage $sourceStorage */
 			if ($sourceStorage->getObjectStore()->getStorageId() === $this->getObjectStore()->getStorageId()) {
