@@ -1834,6 +1834,10 @@ class Server extends ServerContainer implements IServerContainer {
 		return $this->get(ILogger::class);
 	}
 
+	public function getPsrLogger(): LoggerInterface {
+		return $this->get(LoggerInterface::class);
+	}
+
 	/**
 	 * @return ILogFactory
 	 * @throws \OCP\AppFramework\QueryException
