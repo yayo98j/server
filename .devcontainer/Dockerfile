@@ -61,4 +61,8 @@ RUN apt-get -y install \
     apt-get install -y docker-ce docker-ce-cli containerd.io && \
     ln -s /var/run/docker-host.sock /var/run/docker.sock
 
+RUN echo "www-data ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
+	chown -R www-data:www-data /var/www/html
+
+USER www-data
 WORKDIR /var/www/html
