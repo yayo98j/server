@@ -129,7 +129,7 @@ class Streamer {
 			if ($file instanceof File) {
 				try {
 					$fh = $file->fopen('r');
-					if($fh === false) {
+					if ($fh === false) {
 						$logger->error('Unable to open file for stream: ' . print_r($file, true));
 						continue;
 					}
