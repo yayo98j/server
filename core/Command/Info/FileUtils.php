@@ -183,6 +183,18 @@ class FileUtils {
 	}
 
 	/**
+	 * @param IUser $user
+	 * @return IMountPoint[]
+	 */
+	public function getMountsForUser(IUser $user): array {
+		$this->setupManager->setupForUser($user);
+		$prefix = "/" . $user->getUID();
+		return array_filter($this->mountManager->getAll(), function (IMountPoint $mount) use ($prefix) {
+			return str_starts_with($mount->getMountPoint(), $prefix);
+		});
+	}
+
+	/**
 	 * Print out the largest count($sizeLimits) files in the directory tree
 	 *
 	 * @param OutputInterface $output
