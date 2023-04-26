@@ -558,7 +558,7 @@ class ShareAPIController extends OCSController {
 		if ($shareType === IShare::TYPE_USER) {
 			// Valid user is required to share
 			if ($shareWith === null || !$this->userManager->userExists($shareWith)) {
-				throw new OCSNotFoundException($this->l->t('Please specify a valid person to share with'));
+				throw new OCSNotFoundException($this->l->t('Please specify a valid account to share with'));
 			}
 			$share->setSharedWith($shareWith);
 			$share->setPermissions($permissions);
