@@ -24,7 +24,7 @@ style('encryption', 'settings-admin');
 				<span class="msg"></span>
 				<br/>
 				<em>
-					<?php p($l->t("The recovery key is an extra encryption key that is used to encrypt files. It allows the recovery of an account's files in case its password was forgotten.")) ?>
+					<?php p($l->t("The recovery key is an additional encryption key used to encrypt files. It is used to recover files from an account if the password is forgotten.")) ?>
 				</em>
 				<br/>
 				<input type="password"
