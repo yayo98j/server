@@ -59,7 +59,7 @@ const RequestChecks = [
 	},
 	{
 		class: 'OCA\\WorkflowEngine\\Check\\UserGroupMembership',
-		name: t('workflowengine', 'Account group membership'),
+		name: t('workflowengine', 'Group membership'),
 		operators: [
 			{ operator: 'is', name: t('workflowengine', 'is member of') },
 			{ operator: '!is', name: t('workflowengine', 'is not member of') },
