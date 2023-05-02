@@ -214,6 +214,22 @@
 				track-by="code"
 				@input="setUserLanguage" />
 		</div>
+		<div :class="{'icon-loading-small': loading.manager}" class="managers">
+			<NcMultiselect ref="manager"
+				v-model="currentManager"
+				:close-on-select="true"
+				:user-select="true"
+				:options="possibleManagers"
+				:placeholder="t('settings', 'Select manager')"
+				class="multiselect-vue"
+				label="displayname"
+				track-by="id"
+				@search-change="searchUserManager"
+				@remove="updateUserManager"
+				@select="updateUserManager">
+				<span slot="noResult">{{ t('settings', 'No results') }}</span>
+			</NcMultiselect>
+		</div>
 
 		<!-- don't show this on edit mode -->
 		<div v-if="showConfig.showStoragePath || showConfig.showUserBackend"
@@ -272,6 +288,10 @@ export default {
 	},
 	mixins: [UserRowMixin],
 	props: {
+		users: {
+			type: Array,
+			required: true,
+		},
 		user: {
 			type: Object,
 			required: true,
@@ -314,6 +334,8 @@ export default {
 			rand: parseInt(Math.random() * 1000),
 			openedMenu: false,
 			feedbackMessage: '',
+			possibleManagers: [],
+			currentManager: '',
 			editing: false,
 			loading: {
 				all: false,
@@ -327,10 +349,12 @@ export default {
 				disable: false,
 				languages: false,
 				wipe: false,
+				manager: false,
 			},
 		}
 	},
 	computed: {
+
 		/* USER POPOVERMENU ACTIONS */
 		userActions() {
 			const actions = [
@@ -359,6 +383,12 @@ export default {
 			}
 			return actions.concat(this.externalActions)
 		},
+	},
+	async beforeMount() {
+		await this.searchUserManager()
+		if (this.user.manager) {
+			await this.initManager(this.user.manager)
+		}
 	},
 
 	methods: {
@@ -394,6 +424,34 @@ export default {
 				},
 				true
 			)
+		},
+
+		filterManagers(managers) {
+			return managers.filter((manager) => manager.id !== this.user.id)
+		},
+		async initManager(userId) {
+			await this.$store.dispatch('getUser', userId).then(response => {
+				this.currentManager = response?.data.ocs.data
+			})
+		},
+		async searchUserManager(query) {
+			await this.$store.dispatch('searchUsers', { offset: 0, limit: 10, search: query }).then(response => {
+				const users = response?.data ? this.filterManagers(Object.values(response?.data.ocs.data.users)) : []
+				if (users.length > 0) {
+					this.possibleManagers = users
+				}
+			})
+		},
+
+		updateUserManager(manager) {
+			this.loading.manager = true
+			this.$store.dispatch('setUserData', {
+				userid: this.user.id,
+				key: 'manager',
+				value: this.currentManager ? this.currentManager.id : '',
+			}).then(() => {
+				this.loading.manager = false
+			})
 		},
 
 		deleteUser() {
