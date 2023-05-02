@@ -182,6 +182,16 @@ class UserMountCache implements IUserMountCache {
 	}
 
 	private function addToCache(ICachedMountInfo $mount) {
+		$msg = "adding mount info at " . $mount->getMountPoint() . " to " . json_encode([
+			'storage_id' => $mount->getStorageId(),
+			'root_id' => $mount->getRootId(),
+			'user_id' => $mount->getUser()->getUID(),
+			'mount_point' => $mount->getMountPoint(),
+			'mount_id' => $mount->getMountId(),
+			'mount_provider_class' => $mount->getMountProvider(),
+		]);
+		$this->logger->warning($msg, ['exception' => new \Exception($msg)]);
+
 		if ($mount->getStorageId() !== -1) {
 			$this->connection->insertIfNotExist('*PREFIX*mounts', [
 				'storage_id' => $mount->getStorageId(),
@@ -198,6 +208,16 @@ class UserMountCache implements IUserMountCache {
 	}
 
 	private function updateCachedMount(ICachedMountInfo $mount) {
+		$msg = "updating mount info at " . $mount->getMountPoint() . " to " . json_encode([
+			'storage_id' => $mount->getStorageId(),
+			'root_id' => $mount->getRootId(),
+			'user_id' => $mount->getUser()->getUID(),
+			'mount_point' => $mount->getMountPoint(),
+			'mount_id' => $mount->getMountId(),
+			'mount_provider_class' => $mount->getMountProvider(),
+		]);
+		$this->logger->warning($msg, ['exception' => new \Exception($msg)]);
+
 		$builder = $this->connection->getQueryBuilder();
 
 		$query = $builder->update('mounts')
@@ -212,6 +232,8 @@ class UserMountCache implements IUserMountCache {
 	}
 
 	private function removeFromCache(ICachedMountInfo $mount) {
+		$this->logger->warning("removing mount info from " . $mount->getMountPoint(), ['exception' => new \Exception("removing mount info")]);
+
 		$builder = $this->connection->getQueryBuilder();
 
 		$query = $builder->delete('mounts')
