@@ -49,6 +49,8 @@ class EmptyContentSecurityPolicy {
 	 * @link https://github.com/owncloud/core/issues/11925
 	 */
 	protected $evalScriptAllowed = null;
+	/** @var bool Whether WebAssembly compilation is allowed */
+	protected ?bool $evalWasmAllowed = null;
 	/** @var array Domains from which scripts can get loaded */
 	protected $allowedScriptDomains = null;
 	/**
@@ -127,6 +129,17 @@ class EmptyContentSecurityPolicy {
 	 */
 	public function allowEvalScript($state = true) {
 		$this->evalScriptAllowed = $state;
+		return $this;
+	}
+
+	/**
+	 * Whether WebAssembly compilation is allowed or forbidden
+	 * @param bool $state
+	 * @return $this
+	 * @since 27.0.0
+	 */
+	public function allowEvalWasm(bool $state = true) {
+		$this->evalWasmAllowed = $state;
 		return $this;
 	}
 
@@ -447,7 +460,7 @@ class EmptyContentSecurityPolicy {
 		$policy .= "base-uri 'none';";
 		$policy .= "manifest-src 'self';";
 
-		if (!empty($this->allowedScriptDomains) || $this->inlineScriptAllowed || $this->evalScriptAllowed) {
+		if (!empty($this->allowedScriptDomains) || $this->inlineScriptAllowed || $this->evalScriptAllowed || $this->evalWasmAllowed) {
 			$policy .= 'script-src ';
 			if (is_string($this->useJsNonce)) {
 				if ($this->strictDynamicAllowed) {
@@ -469,6 +482,9 @@ class EmptyContentSecurityPolicy {
 			}
 			if ($this->evalScriptAllowed) {
 				$policy .= ' \'unsafe-eval\'';
+			}
+			if ($this->evalWasmAllowed) {
+				$policy .= ' \'wasm-unsafe-eval\'';
 			}
 			$policy .= ';';
 		}
