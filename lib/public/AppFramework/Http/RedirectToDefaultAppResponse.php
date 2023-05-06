@@ -33,17 +33,20 @@ use OCP\IURLGenerator;
  *
  * @since 16.0.0
  * @deprecated 23.0.0 Use RedirectResponse() with IURLGenerator::linkToDefaultPageUrl() instead
+ * @template H of array<string, mixed>
+ * @template-extends RedirectResponse<H>
  */
 class RedirectToDefaultAppResponse extends RedirectResponse {
 	/**
 	 * Creates a response that redirects to the default app
+	 * @param H $headers
 	 *
 	 * @since 16.0.0
 	 * @deprecated 23.0.0 Use RedirectResponse() with IURLGenerator::linkToDefaultPageUrl() instead
 	 */
-	public function __construct() {
+	public function __construct($headers = []) {
 		/** @var IURLGenerator $urlGenerator */
 		$urlGenerator = \OC::$server->get(IURLGenerator::class);
-		parent::__construct($urlGenerator->linkToDefaultPageUrl());
+		parent::__construct($urlGenerator->linkToDefaultPageUrl(), $headers);
 	}
 }

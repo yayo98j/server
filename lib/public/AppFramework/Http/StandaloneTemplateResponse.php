@@ -32,6 +32,9 @@ namespace OCP\AppFramework\Http;
  * full nextcloud UI. Like the 2FA page, or the grant page in the login flow.
  *
  * @since 16.0.0
+ * @template S of int
+ * @template H of array<string, mixed>
+ * @template-extends TemplateResponse<S, H>
  */
 class StandaloneTemplateResponse extends TemplateResponse {
 }

@@ -46,6 +46,9 @@ class CompressionMiddleware extends Middleware {
 		$this->useGZip = false;
 	}
 
+	/**
+	 * @param Response<int, array<string, mixed>> $response
+	 */
 	public function afterController($controller, $methodName, Response $response) {
 		// By default we do not gzip
 		$allowGzip = false;

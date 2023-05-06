@@ -6,6 +6,7 @@
  * @author Joas Schilling <coding@schilljs.com>
  * @author Lukas Reschke <lukas@statuscode.ch>
  * @author Roeland Jago Douma <roeland@famdouma.nl>
+ * @author Kate Döen <kate.doeen@nextcloud.com>
  *
  * @license GNU AGPL version 3 or any later version
  *
@@ -102,7 +103,7 @@ class OCSMiddleware extends Middleware {
 			if ($response->getStatus() === Http::STATUS_UNAUTHORIZED) {
 				$message = '';
 				if ($response instanceof JSONResponse) {
-					/** @var DataResponse $response */
+					/** @var DataResponse<Http::STATUS_UNAUTHORIZED, array, array{}> $response */
 					$message = $response->getData()['message'];
 				}
 
@@ -111,7 +112,7 @@ class OCSMiddleware extends Middleware {
 			if ($response->getStatus() === Http::STATUS_FORBIDDEN) {
 				$message = '';
 				if ($response instanceof JSONResponse) {
-					/** @var DataResponse $response */
+					/** @var DataResponse<Http::STATUS_FORBIDDEN, array, array{}> $response */
 					$message = $response->getData()['message'];
 				}
 

@@ -8,6 +8,7 @@
  * @author Morris Jobke <hey@morrisjobke.de>
  * @author Robin Appelman <robin@icewind.nl>
  * @author Roeland Jago Douma <roeland@famdouma.nl>
+ * @author Kate Döen <kate.doeen@nextcloud.com>
  *
  * @license AGPL-3.0
  *
@@ -32,6 +33,10 @@ use OCP\AppFramework\Http;
  * Class StreamResponse
  *
  * @since 8.1.0
+ * @template S of int
+ * @template C of string
+ * @template H of array<string, mixed>
+ * @template-extends Response<S, H>
  */
 class StreamResponse extends Response implements ICallbackResponse {
 	/** @var string */
@@ -39,10 +44,13 @@ class StreamResponse extends Response implements ICallbackResponse {
 
 	/**
 	 * @param string|resource $filePath the path to the file or a file handle which should be streamed
+	 * @param S $statusCode
+	 * @param H $headers
+	 * @param ?C $contentType
 	 * @since 8.1.0
 	 */
-	public function __construct($filePath) {
-		parent::__construct();
+	public function __construct($filePath, $statusCode = Http::STATUS_OK, $headers = [], $contentType = null) {
+		parent::__construct($statusCode, array_merge($contentType !== null ? ["Content-Type" => $contentType] : [], $headers));
 
 		$this->filePath = $filePath;
 	}
