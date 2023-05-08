@@ -194,6 +194,7 @@ body {
 
 .login-box {
 	width: 300px;
+	border-radius: var(--border-radius-large);
 
 	&__link {
 		display: block;
@@ -203,6 +204,32 @@ body {
 		font-weight: normal !important;
 	}
 }
+
+// Same look like a dashboard panel
+.login-box.guest-box, footer {
+	color: var(--color-main-text);
+	background-color: var(--color-main-background-blur);
+	-webkit-backdrop-filter: var(--filter-background-blur);
+	backdrop-filter: var(--filter-background-blur);
+}
+
+footer {
+	min-width: 300px;
+	// align with login box
+	box-shadow: 0 0 10px var(--color-box-shadow);
+	// set border to pill style and adjust padding for it
+	border-radius: var(--border-radius-pill);
+	padding: 6px 16px;
+	// always show above bottom
+	margin-bottom: 1rem;
+	min-height: unset;
+
+	// reset margin to reduce height of pill
+	p.info {
+		margin: auto 0px;
+	}
+}
+
 .fade-enter-active, .fade-leave-active {
 	transition: opacity .3s;
 }
