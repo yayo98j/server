@@ -17,8 +17,10 @@
 		<input type="hidden" id="dirToken" name="dirToken" value="<?php p($_['dirToken']) ?>" />
 	<?php endif; ?>
 	<input type="hidden" class="max_human_file_size" value="(max <?php isset($_['uploadMaxHumanFilesize']) ? p($_['uploadMaxHumanFilesize']) : ''; ?>)">
-	<input type="checkbox" class="hidden-visually" id="showgridview" aria-label="<?php p($l->t('Toggle grid view')) ?>" <?php if ($_['showgridview']) { ?>checked="checked" <?php } ?> />
-	<label id="view-toggle" for="showgridview" tabindex="0" class="button <?php p($_['showgridview'] ? 'icon-toggle-filelist' : 'icon-toggle-pictures') ?>" title="<?php p($_['showgridview'] ? $l->t('Show list view') : $l->t('Show grid view')) ?>"></label>
+	<?php if (!isset($_["isPublic"])) : ?>
+		<input type="checkbox" class="hidden-visually notPublic" id="showgridview" aria-label="<?php p($l->t('Toggle grid view')) ?>" <?php if ($_['showgridview']) { ?>checked="checked" <?php } ?> />
+		<label id="view-toggle" for="showgridview" tabindex="0" class="button notPublic <?php p($_['showgridview'] ? 'icon-toggle-filelist' : 'icon-toggle-pictures') ?>" title="<?php p($_['showgridview'] ? $l->t('Show list view') : $l->t('Show grid view')) ?>"></label>
+	<?php endif; ?>
 </div>
 <div class="filelist-header"></div>
 
