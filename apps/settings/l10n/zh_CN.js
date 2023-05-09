@@ -267,9 +267,7 @@ OC.L10N.register(
     "Change password" : "修改密码",
     "Your profile picture" : "您的个人资料图片",
     "Upload profile picture" : "上传个人资料图片",
-    "Choose profile picture from files" : "从文件中选择个人资料图片",
     "Remove profile picture" : "移除个人资料图片",
-    "png or jpg, max. 20 MB" : "png 或 jpg 格式，最大 20MB",
     "Picture provided by original account" : "初始账号提供的图片",
     "Cancel" : "取消",
     "Set as profile picture" : "设置为个人资料图片",
@@ -429,6 +427,7 @@ OC.L10N.register(
     "An error occurred during the request. Unable to proceed." : "请求期间发生错误。无法继续。",
     "The app has been enabled but needs to be updated. You will be redirected to the update page in 5 seconds." : "该应用已启用，但是需要更新。5秒后将跳转到更新页面。",
     "Error: This app cannot be enabled because it makes the server unstable" : "错误:这个应用程序不能被启用，因为它使服务器不稳定 ",
+    "There were too many requests from your network. Retry later or contact your administrator if this is an error." : "您的网络请求过多。如果出现错误，请稍后重试或与您的管理员联系。",
     "Documentation" : "文档",
     "Forum" : "论坛",
     "Login" : "登录",
@@ -542,6 +541,7 @@ OC.L10N.register(
     "Upload new" : "上传",
     "Select from Files" : "选择文件",
     "Remove image" : "删除图片",
+    "png or jpg, max. 20 MB" : "png 或 jpg 格式，最大 20MB",
     "Please note that it can take up to 24 hours for the avatar to get updated everywhere." : "请注意，头像可能需要24小时才能在所有地方更新完成。",
     "Choose as profile picture" : "选择个人头像",
     "You are using <strong>%s</strong>" : "您已经使用了 <strong>%s</strong> 存储空间",
@@ -553,6 +553,7 @@ OC.L10N.register(
     "It can take up to 24 hours before the account is displayed as verified." : "在账号显示为已验证之前最多可能需要 24 小时。",
     "Link https://…" : "链接 https://…",
     "Change privacy level of Twitter profile" : "更改推特资料的隐私权限",
-    "Twitter handle @…" : "Twitter 用户名 @…"
+    "Twitter handle @…" : "Twitter 用户名 @…",
+    "Choose profile picture from files" : "从文件中选择个人资料图片"
 },
 "nplurals=1; plural=0;");

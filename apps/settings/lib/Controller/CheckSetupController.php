@@ -59,6 +59,7 @@ use OC\DB\MissingPrimaryKeyInformation;
 use OC\DB\SchemaWrapper;
 use OC\IntegrityCheck\Checker;
 use OC\Lock\NoopLockingProvider;
+use OC\Lock\DBLockingProvider;
 use OC\MemoryInfo;
 use OCA\Settings\SetupChecks\CheckUserCertificates;
 use OCA\Settings\SetupChecks\LdapInvalidUuids;
@@ -330,7 +331,7 @@ class CheckSetupController extends Controller {
 	 * @return bool
 	 */
 	protected function isPhpOutdated(): bool {
-		return PHP_VERSION_ID < 80000;
+		return PHP_VERSION_ID < 80100;
 	}
 
 	/**
@@ -619,6 +620,10 @@ Raw output
 		return !($this->lockingProvider instanceof NoopLockingProvider);
 	}
 
+	protected function hasDBFileLocking(): bool {
+		return ($this->lockingProvider instanceof DBLockingProvider);
+	}
+
 	protected function getSuggestedOverwriteCliURL(): string {
 		$currentOverwriteCliUrl = $this->config->getSystemValue('overwrite.cli.url', '');
 		$suggestedOverwriteCliUrl = $this->request->getServerProtocol() . '://' . $this->request->getInsecureServerHost() . \OC::$WEBROOT;
@@ -632,7 +637,7 @@ Raw output
 	}
 
 	protected function getLastCronInfo(): array {
-		$lastCronRun = $this->config->getAppValue('core', 'lastcron', 0);
+		$lastCronRun = (int)$this->config->getAppValue('core', 'lastcron', '0');
 		return [
 			'diffInSeconds' => time() - $lastCronRun,
 			'relativeTime' => $this->dateTimeFormatter->formatTimeSpan($lastCronRun),
@@ -722,6 +727,12 @@ Raw output
 		if (!extension_loaded('sysvsem')) {
 			// used to limit the usage of resources by preview generator
 			$recommendedPHPModules[] = 'sysvsem';
+		}
+
+		if (!extension_loaded('exif')) {
+			// used to extract metadata from images
+			// required for correct orientation of preview images
+			$recommendedPHPModules[] = 'exif';
 		}
 
 		if (!defined('PASSWORD_ARGON2I')) {
@@ -869,6 +880,7 @@ Raw output
 				'wasEmailTestSuccessful' => $this->wasEmailTestSuccessful(),
 				'hasFileinfoInstalled' => $this->hasFileinfoInstalled(),
 				'hasWorkingFileLocking' => $this->hasWorkingFileLocking(),
+				'hasDBFileLocking' => $this->hasDBFileLocking(),
 				'suggestedOverwriteCliURL' => $this->getSuggestedOverwriteCliURL(),
 				'cronInfo' => $this->getLastCronInfo(),
 				'cronErrors' => $this->getCronErrors(),

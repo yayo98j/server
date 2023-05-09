@@ -132,6 +132,10 @@ class Application extends App {
 					if (!$table->hasIndex('fs_storage_path_prefix') && !$schema->getDatabasePlatform() instanceof PostgreSQL94Platform) {
 						$subject->addHintForMissingSubject($table->getName(), 'fs_storage_path_prefix');
 					}
+
+					if (!$table->hasIndex('fs_parent')) {
+						$subject->addHintForMissingSubject($table->getName(), 'fs_parent');
+					}
 				}
 
 				if ($schema->hasTable('twofactor_providers')) {
@@ -234,6 +238,9 @@ class Application extends App {
 					$table = $schema->getTable('mounts');
 					if (!$table->hasIndex('mounts_class_index')) {
 						$subject->addHintForMissingSubject($table->getName(), 'mounts_class_index');
+					}
+					if (!$table->hasIndex('mounts_user_root_path_index')) {
+						$subject->addHintForMissingSubject($table->getName(), 'mounts_user_root_path_index');
 					}
 				}
 			}

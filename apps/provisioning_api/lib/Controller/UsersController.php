@@ -24,6 +24,7 @@ declare(strict_types=1);
  * @author Thomas Müller <thomas.mueller@tmit.eu>
  * @author Tom Needham <tom@owncloud.com>
  * @author Vincent Petry <vincent@nextcloud.com>
+ * @author Kate Döen <kate.doeen@nextcloud.com>
  *
  * @license AGPL-3.0
  *
@@ -545,10 +546,6 @@ class UsersController extends AUserData {
 		$user = $this->userSession->getUser();
 		if ($user) {
 			$data = $this->getUserData($user->getUID(), true);
-			// rename "displayname" to "display-name" only for this call to keep
-			// the API stable.
-			$data['display-name'] = $data['displayname'];
-			unset($data['displayname']);
 			return new DataResponse($data);
 		}
 
@@ -634,6 +631,7 @@ class UsersController extends AUserData {
 	 * @NoAdminRequired
 	 * @NoSubAdminRequired
 	 * @PasswordConfirmationRequired
+	 * @UserRateThrottle(limit=5, period=60)
 	 *
 	 * @throws OCSException
 	 */
@@ -726,6 +724,7 @@ class UsersController extends AUserData {
 	 * @NoAdminRequired
 	 * @NoSubAdminRequired
 	 * @PasswordConfirmationRequired
+	 * @UserRateThrottle(limit=50, period=600)
 	 *
 	 * edit users
 	 *
@@ -943,11 +942,11 @@ class UsersController extends AUserData {
 				if (filter_var($value, FILTER_VALIDATE_EMAIL) && $value !== $targetUser->getSystemEMailAddress()) {
 					$userAccount = $this->accountManager->getAccount($targetUser);
 					$mailCollection = $userAccount->getPropertyCollection(IAccountManager::COLLECTION_EMAIL);
-					foreach ($mailCollection->getProperties() as $property) {
-						if ($property->getValue() === $value) {
-							break;
-						}
+
+					if ($mailCollection->getPropertyByValue($value)) {
+						throw new OCSException('', 102);
 					}
+
 					$mailCollection->addPropertyWithDefaults($value);
 					$this->accountManager->updateAccount($userAccount);
 				} else {

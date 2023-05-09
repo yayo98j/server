@@ -155,14 +155,14 @@ import { loadState } from '@nextcloud/initial-state'
 import { generateUrl } from '@nextcloud/router'
 import { showError } from '@nextcloud/dialogs'
 
-import NcAvatar from '@nextcloud/vue/dist/Components/NcAvatar'
-import NcActions from '@nextcloud/vue/dist/Components/NcActions'
-import NcActionLink from '@nextcloud/vue/dist/Components/NcActionLink'
-import MapMarkerIcon from 'vue-material-design-icons/MapMarker'
-import PencilIcon from 'vue-material-design-icons/Pencil'
-import AccountIcon from 'vue-material-design-icons/Account'
+import NcAvatar from '@nextcloud/vue/dist/Components/NcAvatar.js'
+import NcActions from '@nextcloud/vue/dist/Components/NcActions.js'
+import NcActionLink from '@nextcloud/vue/dist/Components/NcActionLink.js'
+import MapMarkerIcon from 'vue-material-design-icons/MapMarker.vue'
+import PencilIcon from 'vue-material-design-icons/Pencil.vue'
+import AccountIcon from 'vue-material-design-icons/Account.vue'
 
-import PrimaryActionButton from '../components/Profile/PrimaryActionButton'
+import PrimaryActionButton from '../components/Profile/PrimaryActionButton.vue'
 
 const status = loadState('core', 'status', {})
 const {
@@ -540,7 +540,8 @@ $content-max-width: 640px;
 				grid-template-columns: unset;
 
 				&__displayname {
-					margin: 100px 20px 0px;
+					margin: 80px 20px 0px!important;
+					height: 1em;
 					width: unset;
 					display: unset;
 					text-align: center;
@@ -549,7 +550,11 @@ $content-max-width: 640px;
 				&__edit-button {
 					width: fit-content;
 					display: block;
-					margin: 30px auto;
+					margin: 60px auto;
+				}
+
+				&__status-text {
+					margin: 4px auto;
 				}
 			}
 		}

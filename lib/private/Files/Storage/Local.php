@@ -93,7 +93,7 @@ class Local extends \OC\Files\Storage\Common {
 		$this->defUMask = $this->config->getSystemValue('localstorage.umask', 0022);
 
 		// support Write-Once-Read-Many file systems
-		$this->unlinkOnTruncate = $this->config->getSystemValue('localstorage.unlink_on_truncate', false);
+		$this->unlinkOnTruncate = $this->config->getSystemValueBool('localstorage.unlink_on_truncate', false);
 	}
 
 	public function __destruct() {
@@ -249,7 +249,7 @@ class Local extends \OC\Files\Storage\Common {
 		$fullPath = $this->getSourcePath($path);
 		if (PHP_INT_SIZE === 4) {
 			$helper = new \OC\LargeFileHelper;
-			return $helper->getFileSize($fullPath) ?? false;
+			return $helper->getFileSize($fullPath);
 		}
 		return filesize($fullPath);
 	}
@@ -418,7 +418,7 @@ class Local extends \OC\Files\Storage\Common {
 			// disk_free_space doesn't work on files
 			$sourcePath = dirname($sourcePath);
 		}
-		$space = function_exists('disk_free_space') ? disk_free_space($sourcePath) : false;
+		$space = (function_exists('disk_free_space') && is_dir($sourcePath)) ? disk_free_space($sourcePath) : false;
 		if ($space === false || is_null($space)) {
 			return \OCP\Files\FileInfo::SPACE_UNKNOWN;
 		}
@@ -430,10 +430,6 @@ class Local extends \OC\Files\Storage\Common {
 	}
 
 	public function getLocalFile($path) {
-		return $this->getSourcePath($path);
-	}
-
-	public function getLocalFolder($path) {
 		return $this->getSourcePath($path);
 	}
 
@@ -490,7 +486,7 @@ class Local extends \OC\Files\Storage\Common {
 
 		$fullPath = $this->datadir . $path;
 		$currentPath = $path;
-		$allowSymlinks = $this->config->getSystemValue('localstorage.allowsymlinks', false);
+		$allowSymlinks = $this->config->getSystemValueBool('localstorage.allowsymlinks', false);
 		if ($allowSymlinks || $currentPath === '') {
 			return $fullPath;
 		}
@@ -617,6 +613,7 @@ class Local extends \OC\Files\Storage\Common {
 	}
 
 	public function writeStream(string $path, $stream, int $size = null): int {
+		/** @var int|false $result We consider here that returned size will never be a float because we write less than 4GB */
 		$result = $this->file_put_contents($path, $stream);
 		if (is_resource($stream)) {
 			fclose($stream);

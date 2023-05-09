@@ -102,7 +102,7 @@
     "File system tag" : "Dosya sistemi etiketi",
     "is tagged with" : "şununla etiketlenmiş",
     "is not tagged with" : "şununla etiketlenmemiş",
-    "Request URL" : "İstek Adresi",
+    "Request URL" : "İstek adresi",
     "Request time" : "İstek zamanı",
     "between" : "şunların arasında olan",
     "not between" : "şunların arasında olmayan",
@@ -113,6 +113,6 @@
     "Select a tag" : "Etiket seçin",
     "No results" : "Herhangi bir sonuç bulunamadı",
     "%s (invisible)" : "%s (görünmez)",
-    "%s (restricted)" : "%s (kısıtlı)"
+    "%s (restricted)" : "%s (kısıtlanmış)"
 },"pluralForm" :"nplurals=2; plural=(n > 1);"
 }

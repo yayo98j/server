@@ -243,9 +243,7 @@
     "Change password" : "Αλλαγή συνθηματικού",
     "Your profile picture" : "Η εικόνα του προφίλ σας",
     "Upload profile picture" : "Μεταφόρτωση εικόνας προφίλ",
-    "Choose profile picture from files" : "Επιλογή εικόνας προφίλ από το αρχείο",
     "Remove profile picture" : "Αφαίρεση εικόνας προφίλ",
-    "png or jpg, max. 20 MB" : "png ή jpg, μεγ. 20 MB",
     "Picture provided by original account" : "Φωτογραφία που παρέχεται από τον πρωτότυπο λογαριασμό",
     "Cancel" : "Άκυρο",
     "Set as profile picture" : "Ορισμός ως εικόνας προφίλ",
@@ -397,6 +395,7 @@
     "Never" : "Ποτέ",
     "The app has been enabled but needs to be updated. You will be redirected to the update page in 5 seconds." : "Η εφαρμογή έχει ενεργοποιηθεί αλλά χρειάζεται ενημέρωση. Θα μεταφερθείτε στη σελίδα ενημέρωσης σε 5 δευτερόλεπτα.",
     "Error: This app cannot be enabled because it makes the server unstable" : "Σφάλμα: Αυτή η εφαρμογή δεν μπορεί να ενεργοποιηθεί γιατί θα καταστήσει ασταθή τον διακομιστή.",
+    "There were too many requests from your network. Retry later or contact your administrator if this is an error." : "Υπήρχαν πάρα πολλά αιτήματα από το δίκτυό σας. Δοκιμάστε ξανά αργότερα ή επικοινωνήστε με τον διαχειριστή σας εάν πρόκειται για σφάλμα.",
     "Documentation" : "Τεκμηρίωση",
     "Forum" : "Φόρουμ",
     "Login" : "Σύνδεση",
@@ -504,6 +503,7 @@
     "Upload new" : "Μεταφόρτωση νέας",
     "Select from Files" : "Επιλογή από τα Αρχεία",
     "Remove image" : "Αφαίρεση εικόνας",
+    "png or jpg, max. 20 MB" : "png ή jpg, μεγ. 20 MB",
     "Please note that it can take up to 24 hours for the avatar to get updated everywhere." : "Λάβετε υπόψη ότι μπορεί να χρειαστούν έως και 24 ώρες για να ενημερωθεί το άβαταρ παντού.",
     "Choose as profile picture" : "Επιλέξτε εικόνα προφίλ",
     "You are using <strong>%s</strong>" : "Χρησιμοποιείτε <strong>%s</strong>",
@@ -515,6 +515,7 @@
     "It can take up to 24 hours before the account is displayed as verified." : "Η επαλήθευση του λογαριασμού μπορεί να διαρκέσει έως και 24 ώρες.",
     "Link https://…" : "Σύνδεσμος https://…",
     "Change privacy level of Twitter profile" : "Αλλαγή επιπέδου απορρήτου του προφίλ Twitter",
-    "Twitter handle @…" : "Twitter handle @…"
+    "Twitter handle @…" : "Twitter handle @…",
+    "Choose profile picture from files" : "Επιλογή εικόνας προφίλ από το αρχείο"
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
 }

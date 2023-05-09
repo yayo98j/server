@@ -148,6 +148,7 @@ use OC\Security\VerificationToken\VerificationToken;
 use OC\Session\CryptoWrapper;
 use OC\Share20\ProviderFactory;
 use OC\Share20\ShareHelper;
+use OC\SpeechToText\SpeechToTextManager;
 use OC\SystemTag\ManagerFactory as SystemTagManagerFactory;
 use OC\Tagging\TagMapper;
 use OC\Talk\Broker;
@@ -163,6 +164,7 @@ use OCA\Theming\Util;
 use OCP\Accounts\IAccountManager;
 use OCP\App\IAppManager;
 use OCP\Authentication\LoginCredentials\IStore;
+use OCP\Authentication\Token\IProvider as OCPIProvider;
 use OCP\BackgroundJob\IJobList;
 use OCP\Collaboration\AutoComplete\IManager;
 use OCP\Collaboration\Reference\IReferenceManager;
@@ -245,6 +247,7 @@ use OCP\Security\ISecureRandom;
 use OCP\Security\ITrustedDomainHelper;
 use OCP\Security\VerificationToken\IVerificationToken;
 use OCP\Share\IShareHelper;
+use OCP\SpeechToText\ISpeechToTextManager;
 use OCP\SystemTag\ISystemTagManager;
 use OCP\SystemTag\ISystemTagObjectMapper;
 use OCP\Talk\IBroker;
@@ -438,7 +441,7 @@ class Server extends ServerContainer implements IServerContainer {
 			return $c->get('SystemTagManagerFactory')->getObjectMapper();
 		});
 		$this->registerService('RootFolder', function (ContainerInterface $c) {
-			$manager = \OC\Files\Filesystem::getMountManager(null);
+			$manager = \OC\Files\Filesystem::getMountManager();
 			$view = new View();
 			$root = new Root(
 				$manager,
@@ -550,6 +553,7 @@ class Server extends ServerContainer implements IServerContainer {
 		});
 		$this->registerAlias(IStore::class, Store::class);
 		$this->registerAlias(IProvider::class, Authentication\Token\Manager::class);
+		$this->registerAlias(OCPIProvider::class, Authentication\Token\Manager::class);
 
 		$this->registerService(\OC\User\Session::class, function (Server $c) {
 			$manager = $c->get(IUserManager::class);
@@ -724,7 +728,7 @@ class Server extends ServerContainer implements IServerContainer {
 			/** @var \OCP\IConfig $config */
 			$config = $c->get(\OCP\IConfig::class);
 
-			if ($config->getSystemValue('installed', false) && !(defined('PHPUNIT_RUN') && PHPUNIT_RUN)) {
+			if ($config->getSystemValueBool('installed', false) && !(defined('PHPUNIT_RUN') && PHPUNIT_RUN)) {
 				if (!$config->getSystemValueBool('log_query')) {
 					$v = \OC_App::getAppVersions();
 				} else {
@@ -844,11 +848,13 @@ class Server extends ServerContainer implements IServerContainer {
 			$cacheFactory = $c->get(ICacheFactory::class);
 			if ($cacheFactory->isAvailable()) {
 				$backend = new \OC\Security\RateLimiting\Backend\MemoryCacheBackend(
+					$c->get(AllConfig::class),
 					$this->get(ICacheFactory::class),
 					new \OC\AppFramework\Utility\TimeFactory()
 				);
 			} else {
 				$backend = new \OC\Security\RateLimiting\Backend\DatabaseBackend(
+					$c->get(AllConfig::class),
 					$c->get(IDBConnection::class),
 					new \OC\AppFramework\Utility\TimeFactory()
 				);
@@ -984,7 +990,7 @@ class Server extends ServerContainer implements IServerContainer {
 		/** @deprecated 20.0.0 */
 		$this->registerDeprecatedAlias('IniWrapper', IniGetWrapper::class);
 		$this->registerService(IBus::class, function (ContainerInterface $c) {
-			$busClass = $c->get(\OCP\IConfig::class)->getSystemValue('commandbus');
+			$busClass = $c->get(\OCP\IConfig::class)->getSystemValueString('commandbus');
 			if ($busClass) {
 				[$app, $class] = explode('::', $busClass, 2);
 				if ($c->get(IAppManager::class)->isInstalled($app)) {
@@ -1103,8 +1109,8 @@ class Server extends ServerContainer implements IServerContainer {
 		$this->registerService(ILockingProvider::class, function (ContainerInterface $c) {
 			$ini = $c->get(IniGetWrapper::class);
 			$config = $c->get(\OCP\IConfig::class);
-			$ttl = $config->getSystemValue('filelocking.ttl', max(3600, $ini->getNumeric('max_execution_time')));
-			if ($config->getSystemValue('filelocking.enabled', true) or (defined('PHPUNIT_RUN') && PHPUNIT_RUN)) {
+			$ttl = $config->getSystemValueInt('filelocking.ttl', max(3600, $ini->getNumeric('max_execution_time')));
+			if ($config->getSystemValueBool('filelocking.enabled', true) or (defined('PHPUNIT_RUN') && PHPUNIT_RUN)) {
 				/** @var \OC\Memcache\Factory $memcacheFactory */
 				$memcacheFactory = $c->get(ICacheFactory::class);
 				$memcache = $memcacheFactory->createLocking('lock');
@@ -1197,20 +1203,14 @@ class Server extends ServerContainer implements IServerContainer {
 
 		$this->registerAlias(\OC_Defaults::class, 'ThemingDefaults');
 		$this->registerService('ThemingDefaults', function (Server $c) {
-			/*
-			 * Dark magic for autoloader.
-			 * If we do a class_exists it will try to load the class which will
-			 * make composer cache the result. Resulting in errors when enabling
-			 * the theming app.
-			 */
-			$prefixes = \OC::$composerAutoloader->getPrefixesPsr4();
-			if (isset($prefixes['OCA\\Theming\\'])) {
-				$classExists = true;
-			} else {
+			try {
+				$classExists = class_exists('OCA\Theming\ThemingDefaults');
+			} catch (\OCP\AutoloadNotAllowedException $e) {
+				// App disabled or in maintenance mode
 				$classExists = false;
 			}
 
-			if ($classExists && $c->get(\OCP\IConfig::class)->getSystemValue('installed', false) && $c->get(IAppManager::class)->isInstalled('theming') && $c->getTrustedDomainHelper()->isTrustedDomain($c->getRequest()->getInsecureServerHost())) {
+			if ($classExists && $c->get(\OCP\IConfig::class)->getSystemValueBool('installed', false) && $c->get(IAppManager::class)->isInstalled('theming') && $c->getTrustedDomainHelper()->isTrustedDomain($c->getRequest()->getInsecureServerHost())) {
 				$imageManager = new ImageManager(
 					$c->get(\OCP\IConfig::class),
 					$c->getAppDataDir('theming'),
@@ -1458,6 +1458,8 @@ class Server extends ServerContainer implements IServerContainer {
 		$this->registerAlias(\OCP\Share\IPublicShareTemplateFactory::class, \OC\Share20\PublicShareTemplateFactory::class);
 
 		$this->registerAlias(ITranslationManager::class, TranslationManager::class);
+
+		$this->registerAlias(ISpeechToTextManager::class, SpeechToTextManager::class);
 
 		$this->connectDispatcher();
 	}

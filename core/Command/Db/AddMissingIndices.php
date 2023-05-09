@@ -182,6 +182,16 @@ class AddMissingIndices extends Command {
 				$updated = true;
 				$output->writeln('<info>Filecache table updated successfully.</info>');
 			}
+			if (!$table->hasIndex('fs_parent')) {
+				$output->writeln('<info>Adding additional parent index to the filecache table, this can take some time...</info>');
+				$table->addIndex(['parent'], 'fs_parent');
+				$sqlQueries = $this->connection->migrateToSchema($schema->getWrappedSchema(), $dryRun);
+				if ($dryRun && $sqlQueries !== null) {
+					$output->writeln($sqlQueries);
+				}
+				$updated = true;
+				$output->writeln('<info>Filecache table updated successfully.</info>');
+			}
 		}
 
 		$output->writeln('<info>Check indices of the twofactor_providers table.</info>');
@@ -451,6 +461,14 @@ class AddMissingIndices extends Command {
 				$output->writeln('<info>Adding mounts_class_index index to the oc_mounts table, this can take some time...</info>');
 
 				$table->addIndex(['mount_provider_class'], 'mounts_class_index');
+				$this->connection->migrateToSchema($schema->getWrappedSchema());
+				$updated = true;
+				$output->writeln('<info>oc_mounts table updated successfully.</info>');
+			}
+			if (!$table->hasIndex('mounts_user_root_path_index')) {
+				$output->writeln('<info>Adding mounts_user_root_path_index index to the oc_mounts table, this can take some time...</info>');
+
+				$table->addIndex(['user_id', 'root_id', 'mount_point'], 'mounts_user_root_path_index', [], ['lengths' => [null, null, 128]]);
 				$this->connection->migrateToSchema($schema->getWrappedSchema());
 				$updated = true;
 				$output->writeln('<info>oc_mounts table updated successfully.</info>');

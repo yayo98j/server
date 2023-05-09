@@ -250,9 +250,7 @@ OC.L10N.register(
     "Change password" : "Spremeni geslo",
     "Your profile picture" : "Slika profila",
     "Upload profile picture" : "Pošlji sliko profila",
-    "Choose profile picture from files" : "Izbor slike profila med datotekami",
     "Remove profile picture" : "Odstrani sliko profila",
-    "png or jpg, max. 20 MB" : "png ali jpg, največ. 20 MB",
     "Picture provided by original account" : "Slika iz izvornega računa",
     "Cancel" : "Prekliči",
     "Set as profile picture" : "Nastavi sliko profila",
@@ -397,6 +395,7 @@ OC.L10N.register(
     "Never" : "Nikoli",
     "The app has been enabled but needs to be updated. You will be redirected to the update page in 5 seconds." : "Program je omogočen, vendar zahteva posodobitev. Po nekaj sekundah boste preusmerjeni na stran za posodobitev.",
     "Error: This app cannot be enabled because it makes the server unstable" : "Napaka: tega programa ni mogoče namestiti, ker povzroča nestabilnost strežnika.",
+    "There were too many requests from your network. Retry later or contact your administrator if this is an error." : "Iz omrežja je bilo prejetih preveč zahtev. Če je to napaka, stopite v stik s skrbnikom, sicer pa poskusite spet kasneje.",
     "Documentation" : "Dokumentacija",
     "Forum" : "Forum",
     "Login" : "Prijava",
@@ -456,7 +455,7 @@ OC.L10N.register(
     "Follow us on Mastodon" : "Sledite nam na Mastodon",
     "Check out our blog" : "Preverite naš blog",
     "Subscribe to our newsletter" : "Naročite se na novice",
-    "This community release of Nextcloud is unsupported and instant notifications are unavailable." : "Ta skupnostna objava oblaka Nextcloud ni podprta in obvestila niso na voljo.",
+    "This community release of Nextcloud is unsupported and instant notifications are unavailable." : "Ta objava oblaka Nextcloud ne vključuje podpore in hipna obvestila niso na voljo.",
     "Use a second factor besides your password to increase security for your account." : "Ob geslu je priporočljivo uporabiti tudi drugo-stopenjsko overitev za večjo varnost računa.",
     "If you use third party applications to connect to Nextcloud, please make sure to create and configure an app password for each before enabling second factor authentication." : "Če uporabljate za povezavo z oblakom Nextcloud programe tretjih oseb, najprej ustvarite in nastavite gesla za vsak program, preden omogočite dvostopenjsko overitev.",
     "An error occurred while changing your language. Please reload the page and try again." : "Med spreminjanjem jezika je prišlo do napake. Poskusite ponovno naložiti stran in poskusite znova.",
@@ -500,6 +499,7 @@ OC.L10N.register(
     "Upload new" : "Pošlji novo",
     "Select from Files" : "Izbor iz datotek",
     "Remove image" : "Odstrani sliko",
+    "png or jpg, max. 20 MB" : "png ali jpg, največ. 20 MB",
     "Choose as profile picture" : "Izberi kot sliko profila",
     "You are using <strong>%s</strong>" : "Uporabljate <strong>%s</strong>",
     "You are using <strong>%1$s</strong> of <strong>%2$s</strong> (<strong>%3$s %%</strong>)" : "V uporabi je <strong>%1$s</strong> od <strong>%2$s</strong> (<strong>%3$s %%</strong>)",
@@ -510,6 +510,7 @@ OC.L10N.register(
     "It can take up to 24 hours before the account is displayed as verified." : "Dokončno overjanje računa lahko traja tudi do 24 ur.",
     "Link https://…" : "Povezava https:// …",
     "Change privacy level of Twitter profile" : "Spremeni pravila zasebnosti za profil Twitter",
-    "Twitter handle @…" : "Twitter @ …"
+    "Twitter handle @…" : "Twitter @ …",
+    "Choose profile picture from files" : "Izbor slike profila med datotekami"
 },
 "nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3);");

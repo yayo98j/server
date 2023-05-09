@@ -112,7 +112,7 @@ body {
 
 .two-factor-provider {
 	text-align: center;
-	width: 258px !important;
+	width: 100% !important;
 	display: inline-block;
 	margin-bottom: 0 !important;
 	background-color: var(--color-background-darker) !important;
@@ -154,7 +154,7 @@ body {
 		color: var(--color-primary-text);
 		border-bottom: 2px dotted var(--color-main-background);
 		&:hover, &:focus {
-			color: var(--color-primary-text-dark);
+			color: var(--color-primary-element-text-dark);
 		}
 	}
 }
@@ -649,6 +649,7 @@ code {
 		flex-wrap: wrap;
 		box-sizing: border-box;
 		padding-right: 140px;
+		display: flex;
 
 		div:first-child a {
 			font-size: 0px;
@@ -877,7 +878,10 @@ code {
 							width: 100%;
 						}
 						&.date {
-							display: none;
+							align-self: center;
+							overflow: hidden;
+							text-overflow: ellipsis;
+							min-width: 110px;
 						}
 					}
 				}
@@ -945,8 +949,9 @@ span.ui-icon {
 /* ---- BREADCRUMB ---- */
 .breadcrumb {
 	display: inline-flex;
+	height: 50px;
 }
-div.crumb {
+li.crumb {
 	display: inline-flex;
 	background-image: url('../img/breadcrumb.svg?v=1');
 	background-repeat: no-repeat;

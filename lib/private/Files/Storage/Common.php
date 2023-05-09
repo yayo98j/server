@@ -207,6 +207,9 @@ abstract class Common implements Storage, ILockingStorage, IWriteStreamStorage {
 
 	public function file_put_contents($path, $data) {
 		$handle = $this->fopen($path, "w");
+		if (!$handle) {
+			return false;
+		}
 		$this->removeCachedFile($path);
 		$count = fwrite($handle, $data);
 		fclose($handle);
@@ -477,7 +480,7 @@ abstract class Common implements Storage, ILockingStorage, IWriteStreamStorage {
 	 * get the free space in the storage
 	 *
 	 * @param string $path
-	 * @return int|false
+	 * @return int|float|false
 	 */
 	public function free_space($path) {
 		return \OCP\Files\FileInfo::SPACE_UNKNOWN;
@@ -834,7 +837,7 @@ abstract class Common implements Storage, ILockingStorage, IWriteStreamStorage {
 
 	private function getLockLogger(): ?LoggerInterface {
 		if (is_null($this->shouldLogLocks)) {
-			$this->shouldLogLocks = \OC::$server->getConfig()->getSystemValue('filelocking.debug', false);
+			$this->shouldLogLocks = \OC::$server->getConfig()->getSystemValueBool('filelocking.debug', false);
 			$this->logger = $this->shouldLogLocks ? \OC::$server->get(LoggerInterface::class) : null;
 		}
 		return $this->logger;
