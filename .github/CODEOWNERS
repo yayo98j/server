@@ -21,7 +21,7 @@
 /apps/settings/appinfo/info.xml               @Pytal @JuliaKirschenheuter
 /apps/systemtags/appinfo/info.xml             @Antreesy @marcelklehr
 /apps/theming/appinfo/info.xml                @skjnldsv @juliushaertl
-/apps/updatenotification/appinfo/info.xml     @ChristophWurst @JuliaKirschenheuter
+/apps/updatenotification/appinfo/info.xml     @Pytal @JuliaKirschenheuter
 /apps/user_ldap/appinfo/info.xml              @come-nc @blizzz
 /apps/user_status/appinfo/info.xml            @Antreesy @nickvergessen
 /apps/weather_status/appinfo/info.xml         @julien-nc @juliushaertl
