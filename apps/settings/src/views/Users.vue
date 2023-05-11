@@ -88,7 +88,7 @@
 							:options="quotaOptions"
 							:placeholder="t('settings', 'Select default quota')"
 							:close-on-select="true"
-							@option:created="validateQuota"
+							:create-option="validateQuota"
 							@option:selected="setDefaultQuota" />
 					</div>
 					<div>
