@@ -1,36 +1,35 @@
 */Activity/*                        @nickvergessen
 */Notifications/*                   @nickvergessen
 
-/apps/admin_audit                   @luka-nextcloud @blizzz
-/apps/cloud_federation_api          @vitormattos @mejo-
-/apps/comments                      @marcelklehr @ChristophWurst
-/apps/contactsinteraction           @kesselb @miaulalala @Pytal @GretaD @hamza221 @st3iny
-/apps/dashboard                     @julien-nc @juliushaertl
-/apps/dav/lib/CalDAV                @ChristophWurst @miaulalala @tcitworld
-/apps/dav/lib/CardDAV               @ChristophWurst @miaulalala @tcitworld
-/apps/encryption                    @come-nc @icewind1991
-/apps/federatedfilesharing          @icewind1991 @danxuliu
-/apps/federation                    @vitormattos @datenangebot
-/apps/files                         @nextcloud/files
-/apps/files_external                @icewind1991 @artonge
-/apps/files_sharing                 @skjnldsv @come-nc
-/apps/files_trashbin                @ChristophWurst @icewind1991
-/apps/files_versions                @artonge @icewind1991
-/apps/oauth2                        @julien-nc @Pytal
-/apps/provisioning_api              @provokateurin @nickvergessen
-/apps/settings                      @ChristophWurst @JuliaKirschenheuter
-/apps/systemtags                    @Antreesy @marcelklehr
-/apps/theming                       @skjnldsv @juliushaertl
-/apps/twofactor_backupcodes         @st3iny @miaulalala @Pytal
-/apps/updatenotification            @ChristophWurst @JuliaKirschenheuter
-/apps/user_ldap                     @come-nc @blizzz
-/apps/user_status                   @Antreesy @nickvergessen
-/apps/weather_status                @julien-nc @juliushaertl
-/apps/workflowengine                @blizzz @juliushaertl
+/apps/admin_audit/appinfo/info.xml            @luka-nextcloud @blizzz
+/apps/cloud_federation_api/appinfo/info.xml   @vitormattos @mejo-
+/apps/comments/appinfo/info.xml               @marcelklehr @ChristophWurst
+/apps/contactsinteraction/appinfo/info.xml    @kesselb @miaulalala @Pytal @GretaD @hamza221 @st3iny
+/apps/dashboard/appinfo/info.xml              @julien-nc @juliushaertl
+/apps/dav/lib/CalDAV                          @ChristophWurst @miaulalala @tcitworld
+/apps/dav/lib/CardDAV                         @ChristophWurst @miaulalala @tcitworld
+/apps/encryption/appinfo/info.xml             @come-nc @icewind1991
+/apps/federatedfilesharing/appinfo/info.xml   @icewind1991 @danxuliu
+/apps/federation/appinfo/info.xml             @vitormattos @datenangebot
+/apps/files/appinfo/info.xml                  @skjnldsv @ChristophWurst @ArtificialOwl @come-nc @artonge @icewind1991 @szaimen @susnux @Fenn-CS
+/apps/files_external/appinfo/info.xml         @icewind1991 @artonge
+/apps/files_sharing/appinfo/info.xml          @skjnldsv @come-nc
+/apps/files_trashbin/appinfo/info.xml         @ChristophWurst @icewind1991
+/apps/files_versions/appinfo/info.xml         @artonge @icewind1991
+/apps/oauth2/appinfo/info.xml                 @julien-nc @Pytal
+/apps/provisioning_api/appinfo/info.xml       @provokateurin @nickvergessen
+/apps/settings/appinfo/info.xml               @ChristophWurst @JuliaKirschenheuter
+/apps/systemtags/appinfo/info.xml             @Antreesy @marcelklehr
+/apps/theming/appinfo/info.xml                @skjnldsv @juliushaertl
+/apps/updatenotification/appinfo/info.xml     @ChristophWurst @JuliaKirschenheuter
+/apps/user_ldap/appinfo/info.xml              @come-nc @blizzz
+/apps/user_status/appinfo/info.xml            @Antreesy @nickvergessen
+/apps/weather_status/appinfo/info.xml         @julien-nc @juliushaertl
+/apps/workflowengine/appinfo/info.xml         @blizzz @juliushaertl
 
 # Two-Factor Authentication
 # https://github.com/nextcloud/wg-two-factor-authentication#members
-/apps/twofactor_backupcodes         @ChristophWurst @miaulalala @nickvergessen
+/apps/twofactor_backupcodes/appinfo/info.xml  @st3iny @miaulalala @Pytal
 */TwoFactorAuth/*                   @ChristophWurst @miaulalala @nickvergessen
 /core/templates/twofactor*          @ChristophWurst @miaulalala @nickvergessen
 
