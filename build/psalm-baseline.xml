@@ -979,11 +979,6 @@
       <code><![CDATA[$this->fileIsEncrypted]]></code>
     </TypeDoesNotContainType>
   </file>
-  <file src="apps/files/lib/Command/Scan.php">
-    <NullArgument>
-      <code>null</code>
-    </NullArgument>
-  </file>
   <file src="apps/files/lib/Command/ScanAppData.php">
     <NullArgument>
       <code>null</code>
@@ -3186,14 +3181,6 @@
       <code>exec</code>
       <code>exec</code>
     </InvalidMethodCall>
-  </file>
-  <file src="lib/private/Metadata/Provider/ExifProvider.php">
-    <InvalidReturnStatement>
-      <code>$exifData</code>
-    </InvalidReturnStatement>
-    <InvalidReturnType>
-      <code>array{'gps': FileMetadata, 'size': FileMetadata}</code>
-    </InvalidReturnType>
   </file>
   <file src="lib/private/NavigationManager.php">
     <ParamNameMismatch>
