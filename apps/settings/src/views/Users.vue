@@ -29,16 +29,19 @@
 				@click="showNewUserMenu"
 				@keyup.enter="showNewUserMenu"
 				@keyup.space="showNewUserMenu" />
-			<template #list>
-				<NcAppNavigationItem id="addgroup"
-					ref="addGroup"
+			<NcAppNavigationNew button-id="addgroup"
+			        ref="addGroup"
+					:text="t('settings', 'Add group')"
 					:edit-placeholder="t('settings', 'Enter group name')"
 					:editable="true"
 					:loading="loadingAddGroup"
-					:title="t('settings', 'Add group')"
-					icon="icon-add"
 					@click="showAddGroupForm"
-					@update:title="createGroup" />
+					@update:title="createGroup">
+					<template #icon>
+						<Plus :size="20" />
+					</template>
+			</NcAppNavigationNew>
+			<template #list>
 				<NcAppNavigationItem id="everyone"
 					:exact="true"
 					:title="t('settings', 'Active users')"
@@ -158,6 +161,9 @@ import VueLocalStorage from 'vue-localstorage'
 
 import GroupListItem from '../components/GroupListItem.vue'
 import UserList from '../components/UserList.vue'
+import Plus from 'vue-material-design-icons/Plus.vue'
+
+
 
 Vue.use(VueLocalStorage)
 
@@ -174,6 +180,7 @@ export default {
 		NcContent,
 		GroupListItem,
 		NcMultiselect,
+		Plus,
 		UserList,
 	},
 	props: {
