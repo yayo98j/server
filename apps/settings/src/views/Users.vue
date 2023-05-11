@@ -84,6 +84,7 @@
 						<label for="default-quota-multiselect">{{ t('settings', 'Default quota:') }}</label>
 						<NcSelect v-model="defaultQuota"
 							input-id="default-quota-multiselect"
+							:taggable="true"
 							:options="quotaOptions"
 							:placeholder="t('settings', 'Select default quota')"
 							:close-on-select="false"
