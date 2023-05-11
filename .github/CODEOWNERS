@@ -18,7 +18,7 @@
 /apps/files_versions/appinfo/info.xml         @artonge @icewind1991
 /apps/oauth2/appinfo/info.xml                 @julien-nc @Pytal
 /apps/provisioning_api/appinfo/info.xml       @provokateurin @nickvergessen
-/apps/settings/appinfo/info.xml               @ChristophWurst @JuliaKirschenheuter
+/apps/settings/appinfo/info.xml               @Pytal @JuliaKirschenheuter
 /apps/systemtags/appinfo/info.xml             @Antreesy @marcelklehr
 /apps/theming/appinfo/info.xml                @skjnldsv @juliushaertl
 /apps/updatenotification/appinfo/info.xml     @ChristophWurst @JuliaKirschenheuter
