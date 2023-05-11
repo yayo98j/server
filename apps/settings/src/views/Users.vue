@@ -87,7 +87,7 @@
 							:taggable="true"
 							:options="quotaOptions"
 							:placeholder="t('settings', 'Select default quota')"
-							:close-on-select="false"
+							:close-on-select="true"
 							@option:created="validateQuota"
 							@option:selected="setDefaultQuota" />
 					</div>
@@ -379,10 +379,13 @@ export default {
 		/**
 		 * Validate quota string to make sure it's a valid human file size
 		 *
-		 * @param {string} quota Quota in readable format '5 GB'
+		 * @param {string | object} quota Quota in readable format '5 GB' or Object {id: '5 GB', label: '5GB'}
 		 * @return {Promise|boolean}
 		 */
 		validateQuota(quota) {
+			if (typeof quota === 'object') {
+				quota = quota?.id || quota.label
+			}
 			// only used for new presets sent through @Tag
 			const validQuota = OC.Util.computerFileSize(quota)
 			if (validQuota === null) {
